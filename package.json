@@ -1,0 +1,11 @@
+{
+  "name": "MikeyApi",
+  "version": "0.0.1-1",
+  "private": true,
+  "dependencies": {
+    "express": "~3.1.0",
+    "passport": "~0.1.15",
+    "passport-google-oauth": "~0.1.5",
+    "mongoose": "~3.5.5"
+  }
+}
