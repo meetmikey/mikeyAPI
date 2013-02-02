@@ -2,31 +2,11 @@ var commonPath = '../serverCommon/';
 
 var express        = require('express'),
     mongoose       = require('mongoose'),
-    passport       = require('passport'),
-    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
-    conf           = require('./conf'),
+    users          = require(commonPath + 'schema/user'),
+    passport       = require('./passport'),
     commonConf     = require(commonPath + 'conf'),
     fs             = require('fs'),
     https          = require('https');
-
-passport.use(new GoogleStrategy({
-    clientID: '1020629660865.apps.googleusercontent.com',
-    clientSecret: 'pFvM2J42oBnUFD9sI1ZwITFE',
-    callbackURL: "https://local.meetmikey.com/oauth2callback"
-  },
-  function(token, tokenSecret, profile, done) {
-    // persist!
-    done(null, profile);
-  }
-));
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-
-});
 
 var options = {key: fs.readFileSync('keyslocal/privateKey.key'),
   cert: fs.readFileSync('keyslocal/alpha.magicnotebook.com.crt')};
@@ -46,7 +26,8 @@ app.configure(function() {
 });
 
 app.get('/auth/google',
-        passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.profile',
+        passport.authenticate('google', { accessType: 'offline',
+                                          scope: ['https://www.googleapis.com/auth/userinfo.profile',
                                                   'https://www.googleapis.com/auth/userinfo.email',
                                                   'https://mail.google.com/mail/feed/atom'] }
 ));
