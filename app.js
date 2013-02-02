@@ -1,13 +1,13 @@
-var commonPath = '../serverCommon/';
+var serverCommon = process.env.SERVER_COMMON;
 
-var express        = require('express'),
-    mongoose       = require('mongoose'),
-    passport       = require('passport'),
-    GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
-    conf           = require('./conf'),
-    commonConf     = require(commonPath + 'conf'),
-    fs             = require('fs'),
-    https          = require('https');
+var express           = require('express'),
+    mongoose          = require('mongoose'),
+    passport          = require('passport'),
+    GoogleStrategy    = require('passport-google-oauth').OAuth2Strategy,
+    conf              = require(serverCommon + '/conf'),
+    fs                = require('fs'),
+    https             = require('https'),
+    routeAttachments  = require('./routes/attachments');
 
 passport.use(new GoogleStrategy({
     clientID: '1020629660865.apps.googleusercontent.com',
@@ -37,7 +37,7 @@ app.configure(function() {
   app.use(express.logger({ format:'\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :date \x1b[0m :response-time ms' }));
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 
-  var mongoPath = 'mongodb://' + commonConf.mongo.local.host + '/' + commonConf.mongo.local.db;
+  var mongoPath = 'mongodb://' + conf.mongo.local.host + '/' + conf.mongo.local.db;
   mongoose.connect(mongoPath, function (err) {
     if (err) throw err;
   });
@@ -59,3 +59,5 @@ app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/w
 https.createServer(options, app).listen(8080, function() {
   console.log('mikey api running on port 8080');
 });
+
+app.get('/attachment', routeAttachments.getAttachments);
