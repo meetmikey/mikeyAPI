@@ -1,7 +1,9 @@
+var commonPath = process.env.SERVER_COMMON;
+
 var passport       = require('passport'),
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
-    mongoose       = require('mongoose'),
-    User           = require('../serverCommon/schema/user');
+    mongoose       = require(commonPath + '/lib/mongooseConnect'),
+    User           = require(commonPath + '/schema/user');
 
 
 passport.use(new GoogleStrategy({
