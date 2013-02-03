@@ -2,8 +2,7 @@ var serverCommon = process.env.SERVER_COMMON;
 
 var express           = require('express'),
     mongoose          = require('mongoose'),
-    passport          = require('passport'),
-    GoogleStrategy    = require('passport-google-oauth').OAuth2Strategy,
+    passport          = require('./passport'),
     conf              = require(serverCommon + '/conf'),
     fs                = require('fs'),
     https             = require('https'),
