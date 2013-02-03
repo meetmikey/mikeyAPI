@@ -14,7 +14,7 @@ exports.URL_EXPIRE_TIME_MINUTES = 60;
 
 exports.getAttachments = function(req, res) {
 
-  console.log (req.user)
+  console.log ('user', req.user)
 
   //TEMP!
   var userId = '50f75659017ec66733000004';
@@ -33,7 +33,6 @@ exports.getAttachments = function(req, res) {
         winston.info('foundAttachments: ', foundAttachments);
         res.send( foundAttachments );
       });
-      res.send (foundAttachments)
     }
   });
 }
