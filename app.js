@@ -1,8 +1,9 @@
 var serverCommon = process.env.SERVER_COMMON;
 
 var express           = require('express'),
-    mongoose          = require('mongoose'),
     passport          = require('./passport'),
+    mongoose          = require(serverCommon + '/lib/mongooseConnect').mongoose,
+    GoogleStrategy    = require('passport-google-oauth').OAuth2Strategy,
     conf              = require(serverCommon + '/conf'),
     fs                = require('fs'),
     https             = require('https'),
@@ -16,12 +17,6 @@ var app = module.exports = express();
 app.configure(function() {
   app.use(express.logger({ format:'\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :date \x1b[0m :response-time ms' }));
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-
-  var mongoPath = 'mongodb://' + conf.mongo.local.host + '/' + conf.mongo.local.db;
-  mongoose.connect(mongoPath, function (err) {
-    if (err) throw err;
-  });
-
   app.use(passport.initialize());
 });
 

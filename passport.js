@@ -14,10 +14,8 @@ passport.use(new GoogleStrategy({
   function(accessToken, refreshToken, profile, done) {
     // persist!
     var userData = extractUserData(accessToken, refreshToken, profile);
-    console.log('verifying user');
     User.findOneAndUpdate({googleID: profile.id}, userData, {upsert: true},
       function(err, user) {
-        console.log('in find user');
         return done(err, user);
     });
   }
