@@ -14,11 +14,37 @@ var options = {key: fs.readFileSync('keyslocal/privateKey.key'),
 
 var app = module.exports = express();
 
+//TODO: replace with redis store
+var MemoryStore = express.session.MemoryStore,
+    sessionStore = new MemoryStore();
+
 app.configure(function() {
   app.use(express.logger({ format:'\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :date \x1b[0m :response-time ms' }));
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+  app.use(express.bodyParser())  
+  app.use(express.cookieParser(conf.express.secret)); 
+  app.use(express.session({store: sessionStore})); 
+  app.use(express.methodOverride())
+  app.use(express.static(__dirname + '/public'))
+  app.use(express.compress())
   app.use(passport.initialize());
+  app.use(passport.session());
 });
+
+app.configure('localhost', function(){
+
+
+})
+
+app.configure('development', function(){
+
+
+})
+
+app.configure('production', function(){
+
+
+})
 
 app.get('/auth/google',
         passport.authenticate('google', { accessType: 'offline',
