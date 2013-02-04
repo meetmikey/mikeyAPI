@@ -15,23 +15,25 @@ exports.URL_EXPIRE_TIME_MINUTES = 60;
 exports.getAttachments = function(req, res) {
 
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
-    res.send('missing userId', 400);
+    winston.warn('routeAttachments: getAttachments: missing userId');
+    res.send(400, 'missing userId');
   }
   var userId = req.user._id;
 
   var fields = 'filename contentType size sentDate sender image';
 
   AttachmentModel.find({userId:userId}, fields, function(err, foundAttachments) {
-    if ( ! utils.checkMongo(err, 'getAttachments', 'AttachmentModel.find') ) {
-      res.send({'error': 'mongo failure'}, 500);
+    if ( err ) {
+      winston.doMongoError(err, res);
     } else {
       winston.info('got Attachments');
       routeAttachments.addSignedURLs(foundAttachments, function(err) {
        if ( err ) {
-          winston.error('routeAttachments: getAttachments: error while adding signedURLs: ' + err);
+          winston.handleError(err, res);
+        } else {
+          winston.info('foundAttachments: ', foundAttachments);
+          res.send( foundAttachments );
         }
-        winston.info('foundAttachments: ', foundAttachments);
-        res.send( foundAttachments );
       });
     }
   });
