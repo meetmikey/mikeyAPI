@@ -14,8 +14,10 @@ exports.URL_EXPIRE_TIME_MINUTES = 60;
 
 exports.getAttachments = function(req, res) {
 
-  //TEMP!
-  var userId = '50f75659017ec66733000004';
+  if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
+    res.send('missing userId', 400);
+  }
+  var userId = req.user._id;
 
   var fields = 'filename contentType size sentDate sender image';
 
