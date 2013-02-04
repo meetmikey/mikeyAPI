@@ -23,11 +23,11 @@ exports.getAttachments = function(req, res) {
 
   AttachmentModel.find({userId:userId}, fields, function(err, foundAttachments) {
     if ( ! utils.checkMongo(err, 'getAttachments', 'AttachmentModel.find') ) {
-      res.send({'error': 'mongo failure'}, 400);
+      res.send({'error': 'mongo failure'}, 500);
     } else {
       winston.info('got Attachments');
       routeAttachments.addSignedURLs(foundAttachments, function(err) {
-        if ( err ) {
+       if ( err ) {
           winston.error('routeAttachments: getAttachments: error while adding signedURLs: ' + err);
         }
         winston.info('foundAttachments: ', foundAttachments);
@@ -60,5 +60,8 @@ exports.addSignedURLs = function(dbAttachments, callback) {
         callback(err);
       }
     );
+  }
+  else {
+    callback(null)
   }
 }

@@ -39,11 +39,13 @@ function extractUserData(accessToken, refreshToken, profile) {
 }
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+  done(null, user._id);
 });
 
-passport.deserializeUser(function(id, done) {
-  User.findOne({googleID: id}, function(err, user) {
+passport.deserializeUser(function(_id, done) {
+  User.findOne({_id: _id}, function(err, user) {
+    console.log ('err', err)
+    console.log ('user', user)
     done(err, user);
   });
 });
