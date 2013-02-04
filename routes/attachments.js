@@ -14,7 +14,7 @@ exports.URL_EXPIRE_TIME_MINUTES = 60;
 
 exports.getAttachments = function(req, res) {
 
-  console.log ('user', req.user)
+  console.log ('req', req.user)
 
   //TEMP!
   var userId = '50f75659017ec66733000004';
