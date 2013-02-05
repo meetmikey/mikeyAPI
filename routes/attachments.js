@@ -72,8 +72,8 @@ exports.goToAttachmentSignedURL = function(req, res) {
     res.send(400, 'missing attachmentId');
   } else {
     var userId = req.user._id;
-    var attachmentId = req.attachmentId;
-
+    var attachmentId = req.params.attachmentId;
+    
     //Make sure the attachment belongs to this user...
     AttachmentModel.findOne({_id:attachmentId, userId:userId}, function(err, foundAttachment) {
       if ( err ) {
@@ -82,7 +82,7 @@ exports.goToAttachmentSignedURL = function(req, res) {
         res.send(400, 'attachment not found');
       } else {
         var s3Path = mailUtils.getAttachmentS3Path(attachmentId);
-        s3Utils.signedURL(path, routeAttachments.URL_EXPIRE_TIME_MINUTES);
+        var signedURL = s3Utils.signedURL(s3Path, routeAttachments.URL_EXPIRE_TIME_MINUTES);
         res.redirect(signedURL);
       }
     });
