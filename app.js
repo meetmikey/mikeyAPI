@@ -1,14 +1,15 @@
-var express           = require('express'),
-    passport          = require('./passport'),
-    constants         = require('./constants'),
-    mongoose          = require(constants.SERVER_COMMON + '/lib/mongooseConnect').mongoose,
-    GoogleStrategy    = require('passport-google-oauth').OAuth2Strategy,
-    conf              = require(constants.SERVER_COMMON + '/conf'),
-    fs                = require('fs'),
-    https             = require('https'),
-    onboardUserHelpers = require ('./lib/onboardUserHelpers'),
-    winston           = require(constants.SERVER_COMMON + '/lib/winstonWrapper').winston,
-    routeAttachments  = require('./routes/attachments');
+var express             = require('express'),
+    passport            = require('./passport'),
+    constants           = require('./constants'),
+    mongoose            = require(constants.SERVER_COMMON + '/lib/mongooseConnect').mongoose,
+    GoogleStrategy      = require('passport-google-oauth').OAuth2Strategy,
+    conf                = require(constants.SERVER_COMMON + '/conf'),
+    fs                  = require('fs'),
+    https               = require('https'),
+    onboardUserHelpers  = require ('./lib/onboardUserHelpers'),
+    winston             = require(constants.SERVER_COMMON + '/lib/winstonWrapper').winston,
+    routeLinks          = require('./routes/links'),
+    routeAttachments    = require('./routes/attachments');
 
 var options = {key: fs.readFileSync('keyslocal/privateKey.key'),
   cert: fs.readFileSync('keyslocal/alpha.magicnotebook.com.crt')};
@@ -82,3 +83,5 @@ function ensureAuthenticated(req, res, next) {
 app.get('/attachment',  ensureAuthenticated, routeAttachments.getAttachments);
 
 app.get('/attachmentURL/:attachmentId',  ensureAuthenticated, routeAttachments.goToAttachmentSignedURL);
+
+app.get('/link',  ensureAuthenticated, routeLinks.getLinks);
