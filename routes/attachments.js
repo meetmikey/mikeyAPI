@@ -10,48 +10,46 @@ var conf = require(serverCommon + '/conf')
 
 var routeAttachments = this;
 
-exports.URL_EXPIRE_TIME_MINUTES = 60;
+exports.URL_EXPIRE_TIME_MINUTES = 30;
 
 exports.getAttachments = function(req, res) {
 
-  console.log ('req', req.user)
-
-  //TEMP!
-  var userId = '50f75659017ec66733000004';
-
-  var fields = 'filename contentType size sentDate sender image';
+  if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
+    winston.warn('routeAttachments: getAttachments: missing userId');
+    res.send(400, 'missing userId');
+  }
+  var userId = req.user._id;
+  
+  var fields = 'filename contentType size sentDate sender recipients image';
 
   AttachmentModel.find({userId:userId}, fields, function(err, foundAttachments) {
-    if ( ! utils.checkMongo(err, 'getAttachments', 'AttachmentModel.find') ) {
-      res.send({'error': 'mongo failure'}, 500);
+    if ( err ) {
+      winston.doMongoError(err, res);
     } else {
       winston.info('got Attachments');
       routeAttachments.addSignedURLs(foundAttachments, function(err) {
        if ( err ) {
-          winston.error('routeAttachments: getAttachments: error while adding signedURLs: ' + err);
+          winston.handleError(err, res);
+        } else {
+          winston.info('foundAttachments: ', foundAttachments);
+          res.send( foundAttachments );
         }
-        winston.info('foundAttachments: ', foundAttachments);
-        res.send( foundAttachments );
       });
     }
   });
 }
 
-exports.addSignedURLs = function(dbAttachments, callback) {
-  var expires = new Date();
-  expires.setMinutes(expires.getMinutes() + routeAttachments.URL_EXPIRE_TIME_MINUTES);
-
-  if ( dbAttachments && dbAttachments.length ) {
-    async.forEach(dbAttachments,
+exports.addSignedURLs = function(attachments, callback) {
+  if ( attachments && attachments.length ) {
+    async.forEach(attachments,
       
       function(attachment, forEachCallback) {
-        var path = conf.aws.s3Folders.attachments + '/' + attachment._id;
-        var signedURL = s3Utils.client.signedUrl(path, expires);
-        attachment.signedURL = signedURL;
-
-        //winston.info('set signedURL: ' + signedURL + ' on attachment: ', attachment);
-
         if ( mailUtils.isImage(attachment) && ( ! attachment.image ) ) {
+          var attachmentId = attachment._id;
+          var s3Path = mailUtils.getAttachmentS3Path(attachmentId);
+          var signedURL = s3Utils.signedURL(s3Path, routeAttachments.URL_EXPIRE_TIME_MINUTES);
+          attachment.signedURL = 'https://' + conf.domain + '/attachmentURL/' + attachmentId;
+          //winston.info('set signedURL: ' + signedURL + ' on attachment: ', attachment);
           attachment.image = signedURL;
         }
         forEachCallback();        
@@ -63,5 +61,30 @@ exports.addSignedURLs = function(dbAttachments, callback) {
   }
   else {
     callback(null)
+  }
+}
+
+exports.goToAttachmentSignedURL = function(req, res) {
+  if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
+    winston.warn('routeAttachments: getAttachments: missing userId');
+    res.send(400, 'missing userId');
+  } else if ( ( ! req ) || ( ! req.params ) || ( ! req.params.attachmentId ) ) {
+    res.send(400, 'missing attachmentId');
+  } else {
+    var userId = req.user._id;
+    var attachmentId = req.params.attachmentId;
+    
+    //Make sure the attachment belongs to this user...
+    AttachmentModel.findOne({_id:attachmentId, userId:userId}, function(err, foundAttachment) {
+      if ( err ) {
+        winston.doMongoError(err, res);
+      } else if ( ! foundAttachment ) {
+        res.send(400, 'attachment not found');
+      } else {
+        var s3Path = mailUtils.getAttachmentS3Path(attachmentId);
+        var signedURL = s3Utils.signedURL(s3Path, routeAttachments.URL_EXPIRE_TIME_MINUTES);
+        res.redirect(signedURL);
+      }
+    });
   }
 }
