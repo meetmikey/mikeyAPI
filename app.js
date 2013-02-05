@@ -7,7 +7,8 @@ var express           = require('express'),
     conf              = require(serverCommon + '/conf'),
     fs                = require('fs'),
     https             = require('https'),
-    routeAttachments  = require('./routes/attachments');
+    routeAttachments  = require('./routes/attachments'),
+    routeLinks  = require('./routes/links');
 
 var options = {key: fs.readFileSync('keyslocal/privateKey.key'),
   cert: fs.readFileSync('keyslocal/alpha.magicnotebook.com.crt')};
@@ -79,3 +80,5 @@ function ensureAuthenticated(req, res, next) {
 app.get('/attachment',  ensureAuthenticated, routeAttachments.getAttachments);
 
 app.get('/attachmentURL/:attachmentId',  ensureAuthenticated, routeAttachments.goToAttachmentSignedURL);
+
+app.get('/link',  ensureAuthenticated, routeLinks.getLinks);
