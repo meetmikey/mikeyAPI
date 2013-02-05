@@ -60,8 +60,6 @@ app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/w
   res.send('you are authed!');
 });
 
-app.get('/attachment',  ensureAuthenticated, routeAttachments.getAttachments);
-
 https.createServer(options, app).listen(8080, function() {
   console.log('mikey api running on port 8080');
 });
@@ -76,3 +74,8 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/auth/google')
 }
+
+
+app.get('/attachment',  ensureAuthenticated, routeAttachments.getAttachments);
+
+app.get('/attachmentURL/:attachmentId',  ensureAuthenticated, routeAttachments.goToAttachmentSignedURL);
