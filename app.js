@@ -6,7 +6,6 @@ var express           = require('express'),
     conf              = require(constants.SERVER_COMMON + '/conf'),
     fs                = require('fs'),
     https             = require('https'),
-    oauth             = require ('oauth'),
     onboardUserHelpers = require ('./lib/onboardUserHelpers'),
     winston           = require(constants.SERVER_COMMON + '/lib/winstonWrapper').winston,
     routeAttachments  = require('./routes/attachments');
