@@ -1,14 +1,15 @@
-var serverCommon = process.env.SERVER_COMMON;
-
-var express           = require('express'),
-    passport          = require('./passport'),
-    mongoose          = require(serverCommon + '/lib/mongooseConnect').mongoose,
-    GoogleStrategy    = require('passport-google-oauth').OAuth2Strategy,
-    conf              = require(serverCommon + '/conf'),
-    fs                = require('fs'),
-    https             = require('https'),
-    routeAttachments  = require('./routes/attachments'),
-    routeLinks  = require('./routes/links');
+var express             = require('express'),
+    passport            = require('./passport'),
+    constants           = require('./constants'),
+    mongoose            = require(constants.SERVER_COMMON + '/lib/mongooseConnect').mongoose,
+    GoogleStrategy      = require('passport-google-oauth').OAuth2Strategy,
+    conf                = require(constants.SERVER_COMMON + '/conf'),
+    fs                  = require('fs'),
+    https               = require('https'),
+    onboardUserHelpers  = require ('./lib/onboardUserHelpers'),
+    winston             = require(constants.SERVER_COMMON + '/lib/winstonWrapper').winston,
+    routeLinks          = require('./routes/links'),
+    routeAttachments    = require('./routes/attachments');
 
 var options = {key: fs.readFileSync('keyslocal/privateKey.key'),
   cert: fs.readFileSync('keyslocal/alpha.magicnotebook.com.crt')};
@@ -23,8 +24,6 @@ app.configure(function() {
   app.use(express.logger({ format:'\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :date \x1b[0m :response-time ms' }));
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   app.use(express.bodyParser())  
-  //app.use(express.cookieParser());
-  //app.use(express.session({ secret: 'applecake' }));
   app.use(express.cookieParser(conf.express.secret)); 
   app.use(express.session({store: sessionStore})); 
   app.use(express.methodOverride())
@@ -51,14 +50,18 @@ app.configure('production', function(){
 
 app.get('/auth/google',
         passport.authenticate('google', { accessType: 'offline',
+                                          approvalPrompt: 'force',
                                           scope: ['https://www.googleapis.com/auth/userinfo.profile',
                                                   'https://www.googleapis.com/auth/userinfo.email',
-                                                  'https://mail.google.com/mail/feed/atom'] }
+                                                  'https://mail.google.com/'] }
 ));
 
 app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/wtf'}), function(req, res) {
   console.log('authorized!');
   res.send('you are authed!');
+
+  onboardUserHelpers.addGmailScrapingJob (req.user)
+
 });
 
 https.createServer(options, app).listen(8080, function() {
@@ -70,7 +73,7 @@ https.createServer(options, app).listen(8080, function() {
 //   Use this route middleware on any resource that needs to be protected.  If
 //   the request is authenticated (typically via a persistent login session),
 //   the request will proceed.  Otherwise, the user will be redirected to the
-//   login page.
+//   auth page.
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/auth/google')

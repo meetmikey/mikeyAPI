@@ -2,16 +2,18 @@ var commonPath = process.env.SERVER_COMMON;
 
 var passport       = require('passport'),
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+    conf           = require(commonPath + '/conf'),
     mongoose       = require(commonPath + '/lib/mongooseConnect'),
     User           = require(commonPath + '/schema/user');
 
 
 passport.use(new GoogleStrategy({
-    clientID: '1020629660865.apps.googleusercontent.com',
-    clientSecret: 'pFvM2J42oBnUFD9sI1ZwITFE',
+    clientID: conf.google.appId,
+    clientSecret: conf.google.appSecret,
     callbackURL: "https://local.meetmikey.com/oauth2callback"
   },
   function(accessToken, refreshToken, profile, done) {
+    console.log ('accessToken', accessToken)
     // persist!
     var userData = extractUserData(accessToken, refreshToken, profile);
     User.findOneAndUpdate({googleID: profile.id}, userData, {upsert: true},
