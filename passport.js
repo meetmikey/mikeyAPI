@@ -41,6 +41,11 @@ passport.use(new GoogleStrategy({
           email: userData.email
         })
 
+        if (userData.refreshToken) newUser.refreshToken = userData.refreshToken;
+        if (userData.gender) newUser.gender = userData.gender;
+        if (userData.locale) newUser.locale = userData.locale;
+        if (userData.hd) newUser.hostedDomain = userData.hd;
+
         saveUser (newUser)
 
       }
