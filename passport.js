@@ -16,10 +16,57 @@ passport.use(new GoogleStrategy({
     console.log ('accessToken', accessToken)
     // persist!
     var userData = extractUserData(accessToken, refreshToken, profile);
+
+    /*
+    //TODO: error coming back here when used against mongoHQ = weird
+    //https://github.com/mongodb/node-mongodb-native/issues/699
+
     UserModel.findOneAndUpdate({googleID: profile.id}, userData, {upsert: true},
       function(err, user) {
-        return done(err, user);
-    });
+        return done(null, user);
+      });
+    */
+
+    UserModel.findOne ({googleID : profile.id}, function (err, foundUser) {
+      if  (err) {
+        return done (err)
+      }
+      else if (!foundUser) {
+        var newUser = new UserModel ({
+          googleID: userData.googleID,
+          accessToken: userData.accessToken,
+          displayName: userData.displayName,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email
+        })
+
+        saveUser (newUser)
+
+      }
+      else {
+        foundUser.accessToken = userData.accessToken
+        foundUser.firstName = userData.firstName
+        foundUser.lastName = userData.lastName
+        foundUser.displayName = userData.displayName
+
+        saveUser (foundUser)
+
+      }
+    })
+
+
+    function saveUser (user) {
+      user.save (function (err) {
+        if (err){
+          return done (err)
+        }
+        else {
+          return done (null, user)
+        }
+      })   
+    }
+
   }
 ));
 
