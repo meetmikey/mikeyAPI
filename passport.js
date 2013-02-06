@@ -3,9 +3,9 @@ var commonPath = process.env.SERVER_COMMON;
 var passport       = require('passport'),
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
     conf           = require(commonPath + '/conf'),
-    mongoose       = require(commonPath + '/lib/mongooseConnect'),
-    User           = require(commonPath + '/schema/user');
+    mongoose       = require(commonPath + '/lib/mongooseConnect').mongoose;
 
+UserModel = mongoose.model ('User')
 
 passport.use(new GoogleStrategy({
     clientID: conf.google.appId,
@@ -16,7 +16,7 @@ passport.use(new GoogleStrategy({
     console.log ('accessToken', accessToken)
     // persist!
     var userData = extractUserData(accessToken, refreshToken, profile);
-    User.findOneAndUpdate({googleID: profile.id}, userData, {upsert: true},
+    UserModel.findOneAndUpdate({googleID: profile.id}, userData, {upsert: true},
       function(err, user) {
         return done(err, user);
     });
@@ -44,8 +44,8 @@ passport.serializeUser(function(user, done) {
   done(null, user._id);
 });
 
-passport.deserializeUser(function(_id, done) {
-  User.findOne({_id: _id}, function(err, user) {
+passport.deserializeUser(function(userId, done) {
+  UserModel.findById(userId, function(err, user) {
     console.log ('err', err)
     console.log ('user', user)
     done(err, user);
