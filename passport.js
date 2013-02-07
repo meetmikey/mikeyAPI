@@ -32,21 +32,8 @@ passport.use(new GoogleStrategy({
         return done (err)
       }
       else if (!foundUser) {
-        var newUser = new UserModel ({
-          googleID: userData.googleID,
-          accessToken: userData.accessToken,
-          displayName: userData.displayName,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          email: userData.email
-        })
-
-        if (userData.refreshToken) newUser.refreshToken = userData.refreshToken;
-        if (userData.gender) newUser.gender = userData.gender;
-        if (userData.locale) newUser.locale = userData.locale;
-        if (userData.hd) newUser.hostedDomain = userData.hd;
-
-        saveUser (newUser)
+        var newUser = new UserModel(userData)
+        saveUser(newUser)
 
       }
       else {
@@ -69,7 +56,7 @@ passport.use(new GoogleStrategy({
         else {
           return done (null, user)
         }
-      })   
+      })
     }
 
   }
