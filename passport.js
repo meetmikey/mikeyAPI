@@ -2,18 +2,20 @@ var commonPath = process.env.SERVER_COMMON;
 
 var passport       = require('passport'),
     GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+    RefreshStrategy = require('./lib/refreshStrategy'),
     conf           = require(commonPath + '/conf'),
     mongoose       = require(commonPath + '/lib/mongooseConnect').mongoose;
 
-UserModel = mongoose.model ('User')
+UserModel = mongoose.model('User');
 
-passport.use(new GoogleStrategy({
+
+passport.use('google', new GoogleStrategy({
     clientID: conf.google.appId,
     clientSecret: conf.google.appSecret,
     callbackURL: "https://local.meetmikey.com/oauth2callback"
   },
   function(accessToken, refreshToken, profile, done) {
-    console.log ('accessToken', accessToken)
+    console.log('accessToken', accessToken)
     // persist!
     var userData = extractUserData(accessToken, refreshToken, profile);
 
@@ -34,15 +36,15 @@ passport.use(new GoogleStrategy({
       else if (!foundUser) {
         var newUser = new UserModel(userData)
         saveUser(newUser)
-
       }
       else {
-        foundUser.accessToken = userData.accessToken
-        foundUser.firstName = userData.firstName
-        foundUser.lastName = userData.lastName
-        foundUser.displayName = userData.displayName
+        for (var prop in userData) {
+          if (userData.hasOwnProperty(prop)) {
+            foundUser[prop] = userData[prop];
+          }
+        }
 
-        saveUser (foundUser)
+        saveUser (foundUser);
 
       }
     })
@@ -61,6 +63,35 @@ passport.use(new GoogleStrategy({
 
   }
 ));
+
+passport.use('refresh', new RefreshStrategy({
+    clientID: conf.google.appId,
+    clientSecret: conf.google.appSecret
+  }, function(email, done) {
+  console.log('verifying');
+
+  var strategy = this;
+
+  UserModel.findOne({'email': email}, function(err, foundUser) {
+    if (err) return done(err);
+    if (!foundUser) return done(null, false);
+    console.log('foundUser', foundUser);
+
+    if (!foundUser.refreshToken) {
+      done(null, false);
+    }
+
+    strategy.refreshToken(foundUser.refreshToken, function(err, accessToken) {
+      if (err) return done(err);
+      user.accessToken = accessToken;
+      user.save(function(err) {
+        if (err) return done(err);
+        return done(null, user);
+      });
+    });
+  });
+
+}));
 
 function extractUserData(accessToken, refreshToken, profile) {
   var obj = profile._json;
@@ -90,5 +121,10 @@ passport.deserializeUser(function(userId, done) {
     done(err, user);
   });
 });
+
+passport.ensureAuthenticated  = function(req, res, next) {
+  if (req.isAuthenticated()) { return next(); }
+  res.send(401, 'user not authenticated');
+}
 
 module.exports = passport;
