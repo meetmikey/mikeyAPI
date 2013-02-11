@@ -1,0 +1,6 @@
+<script type='text/javascript'>
+  if (window.opener) {
+    window.opener.postMessage('<%- message %>', 'https://mail.google.com');
+    window.close();
+  }
+</script>

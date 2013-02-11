@@ -67,7 +67,7 @@ passport.use('google', new GoogleStrategy({
 passport.use('refresh', new RefreshStrategy({
     clientID: conf.google.appId,
     clientSecret: conf.google.appSecret
-  }, function(email, done) {
+  }, function(email, refreshToken, done) {
   console.log('verifying');
 
   var strategy = this;
@@ -77,16 +77,12 @@ passport.use('refresh', new RefreshStrategy({
     if (!foundUser) return done(null, false);
     console.log('foundUser', foundUser);
 
-    if (!foundUser.refreshToken) {
-      done(null, false);
-    }
-
-    strategy.refreshToken(foundUser.refreshToken, function(err, accessToken) {
+    strategy.refreshToken(refreshToken, function(err, accessToken) {
       if (err) return done(err);
-      user.accessToken = accessToken;
-      user.save(function(err) {
+      foundUser.accessToken = accessToken;
+      foundUser.save(function(err) {
         if (err) return done(err);
-        return done(null, user);
+        return done(null, foundUser);
       });
     });
   });

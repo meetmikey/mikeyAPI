@@ -21,6 +21,7 @@ var MemoryStore = express.session.MemoryStore,
     sessionStore = new MemoryStore();
 
 app.configure(function() {
+  app.engine('html', require('ejs').__express)
   app.use(express.logger({ format:'\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :date \x1b[0m :response-time ms' }));
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   app.use(express.bodyParser())
@@ -57,15 +58,16 @@ app.get('/auth/google',
 ));
 
 app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/wtf'}), function(req, res) {
-  console.log('authorized!');
-  res.send('you are authed!');
+  console.log('authorized!', req.user);
+  res.render('callback.html', { message: JSON.stringify(req.user) } );
 
   onboardUserHelpers.addGmailScrapingJob (req.user)
 
+
 });
 
-app.get('/auth/refresh', passport.authenticate('refresh'), function(req, res) {
-  res.send(req.user.accessToken);
+app.post('/auth/refresh', passport.authenticate('refresh'), function(req, res) {
+  res.send(req.user);
 });
 
 https.createServer(options, app).listen(8080, function() {
