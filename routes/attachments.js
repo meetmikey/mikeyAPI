@@ -27,7 +27,7 @@ exports.getAttachments = function(req, res) {
       winston.doMongoError(err, res);
     } else {
       winston.info('got attachments');
-      routeAttachments.addSignedURLs(foundAttachments, function(err) {
+      routeAttachments.addSignedURLs(foundAttachments, userId, function(err) {
        if ( err ) {
           winston.handleError(err, res);
         } else {
@@ -39,14 +39,14 @@ exports.getAttachments = function(req, res) {
   });
 }
 
-exports.addSignedURLs = function(attachments, callback) {
+exports.addSignedURLs = function(attachments, userId, callback) {
   if ( attachments && attachments.length ) {
     async.forEach(attachments,
       
       function(attachment, forEachCallback) {
         if ( mailUtils.isImage(attachment) && ( ! attachment.image ) ) {
           var attachmentId = attachment._id;
-          var s3Path = mailUtils.getAttachmentS3Path(attachmentId);
+          var s3Path = s3Utils.getAttachmentS3Path(attachment);
           var signedURL = s3Utils.signedURL(s3Path, routeAttachments.URL_EXPIRE_TIME_MINUTES);
           attachment.signedURL = 'https://' + conf.domain + '/attachmentURL/' + attachmentId;
           //winston.info('set signedURL: ' + signedURL + ' on attachment: ', attachment);
@@ -78,10 +78,12 @@ exports.goToAttachmentSignedURL = function(req, res) {
     AttachmentModel.findOne({_id:attachmentId, userId:userId}, function(err, foundAttachment) {
       if ( err ) {
         winston.doMongoError(err, res);
+        
       } else if ( ! foundAttachment ) {
         res.send(400, 'attachment not found');
+
       } else {
-        var s3Path = mailUtils.getAttachmentS3Path(attachmentId);
+        var s3Path = s3Utils.getAttachmentS3Path(foundAttachment);
         var signedURL = s3Utils.signedURL(s3Path, routeAttachments.URL_EXPIRE_TIME_MINUTES);
         res.redirect(signedURL);
       }
