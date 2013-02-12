@@ -57,13 +57,15 @@ app.get('/auth/google',
                                                   'https://mail.google.com/'] }
 ));
 
-app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/wtf'}), function(req, res) {
+app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/oauth_failure'}), function(req, res) {
   console.log('authorized!', req.user);
   res.render('callback.html', { message: JSON.stringify(req.user) } );
 
   onboardUserHelpers.addGmailScrapingJob (req.user)
+});
 
-
+app.get('/oauth_failure', function(req, res) {
+  res.render('oauth_failure.html');
 });
 
 app.post('/auth/refresh', passport.authenticate('refresh'), function(req, res) {
