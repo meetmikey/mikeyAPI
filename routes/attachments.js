@@ -19,8 +19,8 @@ exports.getAttachments = function(req, res) {
     res.send(400, 'missing userId');
   }
   var userId = req.user._id;
-  
-  var fields = 'filename contentType size sentDate sender recipients image';
+
+  var fields = 'filename contentType size sentDate sender recipients image hash';
 
   AttachmentModel.find({userId:userId}, fields, function(err, foundAttachments) {
     if ( err ) {
