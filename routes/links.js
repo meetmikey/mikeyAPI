@@ -13,7 +13,7 @@ exports.getLinks = function(req, res) {
   }
   var userId = req.user._id;
   
-  var fields = 'url sentDate sender recipients image';
+  var fields = 'url sentDate sender recipients image title text';
 
   LinkModel.find({userId:userId, 'isPromoted':true}, fields, function(err, foundLinks) {
     if ( err ) {
