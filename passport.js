@@ -14,10 +14,9 @@ passport.use('google', new GoogleStrategy({
     clientSecret: conf.google.appSecret,
     callbackURL: "https://local.meetmikey.com/oauth2callback"
   },
-  function(accessToken, refreshToken, profile, done) {
-    console.log('accessToken', accessToken)
+  function(accessToken, refreshToken, params, profile, done) {
     // persist!
-    var userData = extractUserData(accessToken, refreshToken, profile);
+    var userData = extractUserData(accessToken, refreshToken, params, profile);
 
     /*
     //TODO: error coming back here when used against mongoHQ = weird
@@ -77,9 +76,10 @@ passport.use('refresh', new RefreshStrategy({
     if (!foundUser) return done(null, false);
     console.log('foundUser', foundUser);
 
-    strategy.refreshToken(refreshToken, function(err, accessToken) {
+    strategy.refreshToken(refreshToken, function(err, accessToken, expiresAt) {
       if (err) return done(err);
       foundUser.accessToken = accessToken;
+      foundUser.expiresAt = expiresAt;
       foundUser.save(function(err) {
         if (err) return done(err);
         return done(null, foundUser);
@@ -89,7 +89,7 @@ passport.use('refresh', new RefreshStrategy({
 
 }));
 
-function extractUserData(accessToken, refreshToken, profile) {
+function extractUserData(accessToken, refreshToken, params, profile) {
   var obj = profile._json;
   var data = {
           googleID: profile.id,
@@ -103,6 +103,9 @@ function extractUserData(accessToken, refreshToken, profile) {
    if (obj.gender) data.gender = obj.gender;
    if (obj.locale) data.locale = obj.locale;
    if (obj.hd) data.hostedDomain = obj.hd;
+   if (params.expires_in) {
+    data.expiresAt = Date.now() + 1000*params.expires_in;
+   }
    return data;
 }
 
@@ -119,8 +122,9 @@ passport.deserializeUser(function(userId, done) {
 });
 
 passport.ensureAuthenticated  = function(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
+  var emailMatches = req.user.email == req.body.userEmail || req.user.email == req.query.userEmail
+  if (req.isAuthenticated() && emailMatches) { return next(); }
   res.send(401, 'user not authenticated');
-}
+};
 
 module.exports = passport;
