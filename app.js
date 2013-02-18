@@ -9,6 +9,7 @@ var express             = require('express'),
     onboardUserHelpers  = require ('./lib/onboardUserHelpers'),
     winston             = require(constants.SERVER_COMMON + '/lib/winstonWrapper').winston,
     routeLinks          = require('./routes/links'),
+    routeSearch         = require('./routes/search'),
     routeAttachments    = require('./routes/attachments');
 
 var options = {key: fs.readFileSync('keyslocal/privateKey.key'),
@@ -89,3 +90,5 @@ app.get('/attachment',  passport.ensureAuthenticated, routeAttachments.getAttach
 app.get('/attachmentURL/:attachmentId',  passport.ensureAuthenticated, routeAttachments.goToAttachmentSignedURL);
 
 app.get('/link',  passport.ensureAuthenticated, routeLinks.getLinks);
+
+app.get('/search',  passport.ensureAuthenticated, routeSearch.getSearchResults);
