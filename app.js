@@ -1,6 +1,7 @@
 var express             = require('express'),
     passport            = require('./passport'),
     constants           = require('./constants'),
+    expressValidator    = require('express-validator'),
     mongoose            = require(constants.SERVER_COMMON + '/lib/mongooseConnect').mongoose,
     GoogleStrategy      = require('passport-google-oauth').OAuth2Strategy,
     conf                = require(constants.SERVER_COMMON + '/conf'),
@@ -31,6 +32,7 @@ app.configure(function() {
   app.use(express.methodOverride())
   app.use(express.static(__dirname + '/public'))
   app.use(express.compress())
+  app.use(expressValidator)
   app.use(passport.initialize());
   app.use(passport.session());
 });

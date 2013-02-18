@@ -29,9 +29,15 @@ exports.getSearchResults = function(req, res) {
       res.send (errors, 400);
       return;
     }
+    else {
+      doSearch ()
+    }
   })
 
-  res.send ({'attachments' : [], 'links' : []})
+  function doSearch() {
+    res.send ({'attachments' : [], 'links' : []})
+  }
+
 
 }
 
