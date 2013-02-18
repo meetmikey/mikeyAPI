@@ -15,13 +15,16 @@ exports.URL_EXPIRE_TIME_MINUTES = 30;
 
 exports.getSearchResults = function(req, res) {
 
-  var search = req.query.query
-  var userId = req.user._id;
-  var onlyUsePrefix = false
-  var from = 0
-  var size = 10
+  // defaults
+  var searchOptions = {
+    query : req.query.query,
+    from : 0,
+    size : 10
+  }
 
-  routeSearch.validateSearchQuery (req, function (errors) {
+  var userId = req.user._id
+
+  routeSearch.validateSearchQuery (req, searchOptions, function (errors) {
     if (errors) {
       res.send (errors, 400);
       return;
@@ -32,25 +35,20 @@ exports.getSearchResults = function(req, res) {
 
 }
 
-exports.validateSearchQuery = function (req, callback) {
+exports.validateSearchQuery = function (req, searchOptions, callback) {
   if (req.query.from) {
     req.assert('from', 'invalid parameter for from').isInt()
-    from = req.query.from
+    searchOptions.from = req.query.from
   }
 
   if (req.query.size) {
     req.assert('size', 'invalid parameter for size').isInt()
-    size = req.query.size
-  }
-
-  if (req.query.onlyUsePrefix) {
-    req.assert ('onlyUsePrefix', 'invalid parameter for onlyUsePrefix').isBoolean()
-    onlyUsePrefix = req.query.onlyUsePrefix
+    searchOptions.size = req.query.size
   }
 
   req.assert('query', 'Invalid query param').notEmpty()
 
-  var errors = req.validationErrors();
+  var errors = req.validationErrors()
 
   callback (errors)
 
