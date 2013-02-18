@@ -7,6 +7,7 @@ var conf = require(serverCommon + '/conf')
   , AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
   , s3Utils = require(serverCommon + '/lib/s3Utils')
+  , constants = require('../constants')
 
 var routeAttachments = this;
 
@@ -19,6 +20,9 @@ exports.getAttachments = function(req, res) {
     res.send(400, 'missing userId');
   }
   var userId = req.user._id;
+  if (constants.USE_SPOOFED_USER) {
+    userId = constants.SPOOFED_USER_ID;
+  }
 
   var fields = 'filename contentType size sentDate sender recipients image hash';
 
@@ -42,7 +46,7 @@ exports.getAttachments = function(req, res) {
 exports.addSignedURLs = function(attachments, userId, callback) {
   if ( attachments && attachments.length ) {
     async.forEach(attachments,
-      
+
       function(attachment, forEachCallback) {
         if ( mailUtils.isImage(attachment) && ( ! attachment.image ) ) {
           var attachmentId = attachment._id;
@@ -52,7 +56,7 @@ exports.addSignedURLs = function(attachments, userId, callback) {
           //winston.info('set signedURL: ' + signedURL + ' on attachment: ', attachment);
           attachment.image = signedURL;
         }
-        forEachCallback();        
+        forEachCallback();
       },
       function(err) {
         callback(err);
@@ -72,13 +76,16 @@ exports.goToAttachmentSignedURL = function(req, res) {
     res.send(400, 'missing attachmentId');
   } else {
     var userId = req.user._id;
+    if (constants.USE_SPOOFED_USER) {
+      userId = constants.SPOOFED_USER_ID;
+    }
     var attachmentId = req.params.attachmentId;
-    
+
     //Make sure the attachment belongs to this user...
     AttachmentModel.findOne({_id:attachmentId, userId:userId}, function(err, foundAttachment) {
       if ( err ) {
         winston.doMongoError(err, res);
-        
+
       } else if ( ! foundAttachment ) {
         res.send(400, 'attachment not found');
 
