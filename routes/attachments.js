@@ -15,8 +15,6 @@ var routeAttachments = this;
 
 exports.getAttachments = function(req, res) {
 
-  console.log ('hello world')
-
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
     winston.warn('routeAttachments: getAttachments: missing userId');
     res.send(400, 'missing userId');
