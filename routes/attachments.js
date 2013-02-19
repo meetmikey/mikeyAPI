@@ -15,6 +15,8 @@ var routeAttachments = this;
 
 exports.getAttachments = function(req, res) {
 
+  console.log ('hello world')
+
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
     winston.warn('routeAttachments: getAttachments: missing userId');
     res.send(400, 'missing userId');
@@ -28,13 +30,8 @@ exports.getAttachments = function(req, res) {
     if ( err ) {
       winston.doMongoError(err, res);
     } else {
-      attachmentHelpers.addSignedURLs(foundAttachments, userId, function(err) {
-       if ( err ) {
-          winston.handleError(err, res);
-        } else {
-          res.send( foundAttachments );
-        }
-      });
+      attachmentHelpers.addSignedURLs(foundAttachments, userId)
+      res.send( foundAttachments );
     }
   });
 }
