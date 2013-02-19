@@ -11,6 +11,8 @@ var express             = require('express'),
     routeLinks          = require('./routes/links'),
     routeAttachments    = require('./routes/attachments');
 
+winston.logToFiles('mikeyAPI');
+
 var options = {key: fs.readFileSync('keyslocal/privateKey.key'),
   cert: fs.readFileSync('keyslocal/alpha.magicnotebook.com.crt')};
 
