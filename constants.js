@@ -23,5 +23,5 @@ define('USE_SPOOFED_USER', true)
 define('SPOOFED_USER_ID', '5119c7b60746d47552000005')
 
 define('DEFAULT_FIELDS_ATTACHMENT', 'filename contentType sentDate sender recipients image hash fileSize')
-
+define('DEFAULT_FIELDS_LINK', 'url sentDate sender recipients image title text comparableURLHash')
 define('URL_EXPIRE_TIME_MINUTES', 30)

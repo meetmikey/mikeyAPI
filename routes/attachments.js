@@ -24,9 +24,7 @@ exports.getAttachments = function(req, res) {
     userId = constants.SPOOFED_USER_ID;
   }
 
-  var fields = 'filename contentType size sentDate sender recipients image hash';
-
-  AttachmentModel.find({userId:userId}, fields, function(err, foundAttachments) {
+  AttachmentModel.find({userId:userId}, constants.DEFAULT_FIELDS_ATTACHMENT, function(err, foundAttachments) {
     if ( err ) {
       winston.doMongoError(err, res);
     } else {
