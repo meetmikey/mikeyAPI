@@ -17,9 +17,7 @@ exports.getLinks = function(req, res) {
     userId = constants.SPOOFED_USER_ID;
   }
 
-  var fields = 'url sentDate sender recipients image title text';
-
-  LinkModel.find({userId:userId, 'isPromoted':true}, fields, function(err, foundLinks) {
+  LinkModel.find({userId:userId, 'isPromoted':true}, constants.DEFAULT_FIELD_LINK, function(err, foundLinks) {
     if ( err ) {
       winston.doMongoError(err, res);
     } else {
