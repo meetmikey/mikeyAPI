@@ -13,8 +13,6 @@ var express             = require('express'),
     routeSearch         = require('./routes/search'),
     routeAttachments    = require('./routes/attachments');
 
-winston.logToFiles('mikeyAPI');
-
 var options = {key: fs.readFileSync('keyslocal/privateKey.key'),
   cert: fs.readFileSync('keyslocal/alpha.magicnotebook.com.crt')};
 
