@@ -24,14 +24,17 @@ exports.getAttachments = function(req, res) {
     userId = constants.SPOOFED_USER_ID;
   }
 
-  AttachmentModel.find({userId:userId}, constants.DEFAULT_FIELDS_ATTACHMENT, function(err, foundAttachments) {
-    if ( err ) {
-      winston.doMongoError(err, res);
-    } else {
-      attachmentHelpers.addSignedURLs(foundAttachments, userId)
-      res.send( foundAttachments );
-    }
-  });
+  AttachmentModel.find({userId:userId})
+    .sort ('-sentDate')
+    .select(constants.DEFAULT_FIELDS_ATTACHMENT)
+    .exec(function(err, foundAttachments) {
+      if ( err ) {
+        winston.doMongoError(err, res);
+      } else {
+        attachmentHelpers.addSignedURLs(foundAttachments, userId)
+        res.send( foundAttachments );
+      }
+    });
 }
 
 exports.goToAttachmentSignedURL = function(req, res) {
