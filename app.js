@@ -39,7 +39,6 @@ app.configure(function() {
 
 app.configure('localhost', function(){
 
-
 })
 
 app.configure('development', function(){

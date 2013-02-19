@@ -8,10 +8,10 @@ var conf = require(serverCommon + '/conf')
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
   , s3Utils = require(serverCommon + '/lib/s3Utils')
   , constants = require('../constants')
+  , attachmentHelpers = require ('../lib/attachmentHelpers')
 
 var routeAttachments = this;
 
-exports.URL_EXPIRE_TIME_MINUTES = 30;
 
 exports.getAttachments = function(req, res) {
 
@@ -30,7 +30,7 @@ exports.getAttachments = function(req, res) {
     if ( err ) {
       winston.doMongoError(err, res);
     } else {
-      routeAttachments.addSignedURLs(foundAttachments, userId, function(err) {
+      attachmentHelpers.addSignedURLs(foundAttachments, userId, function(err) {
        if ( err ) {
           winston.handleError(err, res);
         } else {
@@ -39,31 +39,6 @@ exports.getAttachments = function(req, res) {
       });
     }
   });
-}
-
-exports.addSignedURLs = function(attachments, userId, callback) {
-  if ( attachments && attachments.length ) {
-    async.forEach(attachments,
-
-      function(attachment, forEachCallback) {
-        if ( mailUtils.isImage(attachment) && ( ! attachment.image ) ) {
-          var attachmentId = attachment._id;
-          var s3Path = s3Utils.getAttachmentS3Path(attachment);
-          var signedURL = s3Utils.signedURL(s3Path, routeAttachments.URL_EXPIRE_TIME_MINUTES);
-          attachment.signedURL = 'https://' + conf.domain + '/attachmentURL/' + attachmentId;
-          //winston.info('set signedURL: ' + signedURL + ' on attachment: ', attachment);
-          attachment.image = signedURL;
-        }
-        forEachCallback();
-      },
-      function(err) {
-        callback(err);
-      }
-    );
-  }
-  else {
-    callback(null)
-  }
 }
 
 exports.goToAttachmentSignedURL = function(req, res) {
