@@ -23,7 +23,6 @@ exports.getLinks = function(req, res) {
     if ( err ) {
       winston.doMongoError(err, res);
     } else {
-      winston.info('foundLinks: ', foundLinks);
       res.send( foundLinks );
     }
   });

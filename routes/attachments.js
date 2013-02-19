@@ -30,12 +30,10 @@ exports.getAttachments = function(req, res) {
     if ( err ) {
       winston.doMongoError(err, res);
     } else {
-      winston.info('got attachments');
       routeAttachments.addSignedURLs(foundAttachments, userId, function(err) {
        if ( err ) {
           winston.handleError(err, res);
         } else {
-          winston.info('foundAttachments: ', foundAttachments);
           res.send( foundAttachments );
         }
       });

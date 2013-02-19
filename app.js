@@ -1,5 +1,5 @@
 var express             = require('express'),
-    passport            = require('./passport'),
+    passport            = require('./lib/passport'),
     constants           = require('./constants'),
     expressValidator    = require('express-validator'),
     mongoose            = require(constants.SERVER_COMMON + '/lib/mongooseConnect').mongoose,

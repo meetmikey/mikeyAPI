@@ -7,6 +7,7 @@ var conf = require(serverCommon + '/conf')
   , AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
   , s3Utils = require(serverCommon + '/lib/s3Utils')
+  , searchHelpers = require ('../lib/searchHelpers')
   , constants = require('../constants')
 
 var routeSearch = this;
@@ -19,10 +20,9 @@ exports.getSearchResults = function(req, res) {
   var searchOptions = {
     query : req.query.query,
     from : 0,
-    size : 10
+    size : 10,
+    userId : req.user._id
   }
-
-  var userId = req.user._id
 
   routeSearch.validateSearchQuery (req, searchOptions, function (errors) {
     if (errors) {
@@ -35,7 +35,15 @@ exports.getSearchResults = function(req, res) {
   })
 
   function doSearch() {
-    res.send ({'attachments' : [], 'links' : []})
+    searchHelpers.doSearch (searchOptions.query, searchOptions.userId, searchOptions.from, searchOptions.size, 
+      function (err, result) {
+      if (err) {
+        res.send ({'error' : err}, 400)
+      }
+      else {
+        res.send (result)
+      }
+    })
   }
 
 
