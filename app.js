@@ -1,6 +1,7 @@
 var express             = require('express'),
-    passport            = require('./passport'),
+    passport            = require('./lib/passport'),
     constants           = require('./constants'),
+    expressValidator    = require('express-validator'),
     mongoose            = require(constants.SERVER_COMMON + '/lib/mongooseConnect').mongoose,
     GoogleStrategy      = require('passport-google-oauth').OAuth2Strategy,
     conf                = require(constants.SERVER_COMMON + '/conf'),
@@ -9,6 +10,7 @@ var express             = require('express'),
     onboardUserHelpers  = require ('./lib/onboardUserHelpers'),
     winston             = require(constants.SERVER_COMMON + '/lib/winstonWrapper').winston,
     routeLinks          = require('./routes/links'),
+    routeSearch         = require('./routes/search'),
     routeAttachments    = require('./routes/attachments');
 
 winston.logToFiles('mikeyAPI');
@@ -32,12 +34,12 @@ app.configure(function() {
   app.use(express.methodOverride())
   app.use(express.static(__dirname + '/public'))
   app.use(express.compress())
+  app.use(expressValidator)
   app.use(passport.initialize());
   app.use(passport.session());
 });
 
 app.configure('localhost', function(){
-
 
 })
 
@@ -91,3 +93,5 @@ app.get('/attachment',  passport.ensureAuthenticated, routeAttachments.getAttach
 app.get('/attachmentURL/:attachmentId',  passport.ensureAuthenticated, routeAttachments.goToAttachmentSignedURL);
 
 app.get('/link',  passport.ensureAuthenticated, routeLinks.getLinks);
+
+app.get('/search',  passport.ensureAuthenticated, routeSearch.getSearchResults);
