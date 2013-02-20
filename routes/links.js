@@ -17,11 +17,15 @@ exports.getLinks = function(req, res) {
     userId = constants.SPOOFED_USER_ID;
   }
 
-  LinkModel.find({userId:userId, 'isPromoted':true}, constants.DEFAULT_FIELD_LINK, function(err, foundLinks) {
-    if ( err ) {
-      winston.doMongoError(err, res);
-    } else {
-      res.send( foundLinks );
+  LinkModel.find({userId:userId, 'isPromoted':true})
+    .sort ('-sentDate')
+    .select(constants.DEFAULT_FIELD_LINK)
+    .exec(function(err, foundLinks) {
+      if ( err ) {
+        winston.doMongoError(err, res);
+      } else {
+        res.send( foundLinks );
+      }
     }
-  });
+  );
 }
