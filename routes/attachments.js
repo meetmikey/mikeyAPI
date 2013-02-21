@@ -60,7 +60,16 @@ exports.goToAttachmentSignedURL = function(req, res) {
 
       } else {
         var s3Path = s3Utils.getAttachmentS3Path(foundAttachment);
-        var signedURL = s3Utils.signedURL(s3Path, routeAttachments.URL_EXPIRE_TIME_MINUTES);
+
+        var headers = {};
+        var contentType = foundAttachment.contentType;
+        if ( contentType &&
+            ( ( contentType.indexOf('image/') === 0 )
+            || ( contentType == 'application/pdf' ) ) ) {
+            headers['response-content-disposition']  = 'inline;filename=' + foundAttachment.filename;
+          }
+
+        var signedURL = s3Utils.signedURL(s3Path, routeAttachments.URL_EXPIRE_TIME_MINUTES, headers);
         res.redirect(signedURL);
       }
     });
