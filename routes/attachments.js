@@ -19,13 +19,21 @@ exports.getAttachments = function(req, res) {
     winston.warn('routeAttachments: getAttachments: missing userId');
     res.send(400, 'missing userId');
   }
+
   var userId = req.user._id;
+  var before = req.query.before;
+  var after = req.query.after;
+  var limit = req.query.limit;
+
+
+
   if (constants.USE_SPOOFED_USER) {
     userId = constants.SPOOFED_USER_ID;
   }
 
   AttachmentModel.find({userId:userId})
     .sort ('-sentDate')
+    .limit ()
     .select(constants.DEFAULT_FIELDS_ATTACHMENT)
     .exec(function(err, foundAttachments) {
       if ( err ) {

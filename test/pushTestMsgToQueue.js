@@ -4,6 +4,7 @@ var constants = require('../constants'),
     mongoose = require(constants.SERVER_COMMON + '/lib/mongooseConnect').mongoose
 
 var UserModel = mongoose.model ('User')
+var ActiveConnectionModel = mongoose.model ('ActiveConnection')
 
 var user = {
   googleID: "106939156771784101693",
@@ -27,19 +28,29 @@ var user = {"__v":0,"googleID":"102110918656901976675","accessToken":"ya29.AHES6
 /*
 var user = {"__v":0,"locale":"en","refreshToken":"1/9x7mwZRpFbJ2GFF14aNSavyxaW6EgLv3fXKuLy9-q2s","googleID":"115882407960585095714","accessToken":"ya29.AHES6ZTZ7QLpyKbfKAXg-anCq6ymWKxGOTHcUX0idv5vmTUh7dU7Jw","displayName":"Sagar Mehta","firstName":"Sagar","lastName":"Mehta","email":"sagar@mikeyteam.com","_id":"5113108d9f2459d70c000004","timestamp":"2013-02-07T02:25:17.361Z","linksExtracted":false,"attachmentsExtracted":false,"gmailScrapeRequested":false}
 */
-
+/*
 sqsConnect.addMessageToMailDownloadQueue (user, function (err, msg) {
   if (err) {
     winston.error ('Could not add message to start downloading user data', user._id)
   }
 })
-
-/*
-sqsConnect.addMessageToMailUpdateQueue (user, function (err, msg){
-  if (err) {
-    winston.error ('Could not add message to start downloading user data', user._id)
-  }
-
-  console.log (msg)
-})
 */
+
+var connection = new ActiveConnectionModel ({
+  userId : user._id
+})
+
+connection.save (function (err) {
+
+  if (err) { console.log (err); return;}
+
+  sqsConnect.addMessageToMailUpdateQueue (user, function (err, msg){
+    if (err) {
+      winston.error ('Could not add message to start downloading user data', user._id)
+    }
+
+    console.log (msg)
+  })
+
+
+})
