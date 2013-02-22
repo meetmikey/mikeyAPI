@@ -55,7 +55,6 @@ exports.getAttachments = function(req, res) {
       }
     });
 
-
 }
 
 exports.goToAttachmentSignedURL = function(req, res) {

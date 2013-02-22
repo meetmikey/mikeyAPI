@@ -29,11 +29,11 @@ exports.getLinks = function(req, res) {
   var query = LinkModel.find({userId:userId, 'isPromoted':true})
 
   if (before) {
-    query.where (sentDate).lt (before)
+    query.where ('sentDate').lt (before)
   }
 
   if (after) {
-    query.where (sentDate).gt (after)
+    query.where ('sentDate').gt (after)
   }
       
   query.sort ('-sentDate')
