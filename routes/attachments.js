@@ -36,11 +36,11 @@ exports.getAttachments = function(req, res) {
   var query = AttachmentModel.find({userId:userId})
   
   if (before) {
-    query.where (sentDate).lt (before)
+    query.where ('sentDate').lt (before)
   }
 
   if (after) {
-    query.where (sentDate).gt (after)    
+    query.where ('sentDate').gt (after)    
   }
 
   query.sort ('-sentDate')
