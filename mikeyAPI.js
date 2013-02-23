@@ -34,7 +34,6 @@ app.configure(function() {
   app.use(express.compress())
   app.use(expressValidator)
   app.use(passport.initialize());
-  app.use(passport.session());
 });
 
 app.configure('localhost', function(){
