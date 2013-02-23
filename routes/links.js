@@ -12,13 +12,32 @@ exports.getLinks = function(req, res) {
     winston.warn('routeLinks: getLinks: missing userId');
     res.send(400, 'missing userId');
   }
+
   var userId = req.user._id;
+  var before = req.query.before;
+  var after = req.query.after;
+  var limit = req.query.limit;
+
+  if (!limit) {
+    limit = 50
+  }
+
   if (constants.USE_SPOOFED_USER) {
     userId = constants.SPOOFED_USER_ID;
   }
 
-  LinkModel.find({userId:userId, 'isPromoted':true})
-    .sort ('-sentDate')
+  var query = LinkModel.find({userId:userId, 'isPromoted':true})
+
+  if (before) {
+    query.where ('sentDate').lt (before)
+  }
+
+  if (after) {
+    query.where ('sentDate').gt (after)
+  }
+      
+  query.sort ('-sentDate')
+    .limit (limit)
     .select(constants.DEFAULT_FIELD_LINK)
     .exec(function(err, foundLinks) {
       if ( err ) {

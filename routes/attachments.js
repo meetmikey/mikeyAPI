@@ -28,14 +28,27 @@ exports.getAttachments = function(req, res) {
 
   // update last access time
   activeConnectionHelpers.updateLastAccessTime (req.user);
+  
+  if (!limit) {
+    limit = 50
+  }
 
   if (constants.USE_SPOOFED_USER) {
     userId = constants.SPOOFED_USER_ID;
   }
 
-  AttachmentModel.find({userId:userId})
-    .sort ('-sentDate')
-    .limit ()
+  var query = AttachmentModel.find({userId:userId})
+  
+  if (before) {
+    query.where ('sentDate').lt (before)
+  }
+
+  if (after) {
+    query.where ('sentDate').gt (after)    
+  }
+
+  query.sort ('-sentDate')
+    .limit (limit)
     .select(constants.DEFAULT_FIELDS_ATTACHMENT)
     .exec(function(err, foundAttachments) {
       if ( err ) {
@@ -45,7 +58,7 @@ exports.getAttachments = function(req, res) {
         res.send( foundAttachments );
       }
     });
-};
+}
 
 exports.goToAttachmentSignedURL = function(req, res) {
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
@@ -85,4 +98,4 @@ exports.goToAttachmentSignedURL = function(req, res) {
       }
     });
   }
-};
+}
