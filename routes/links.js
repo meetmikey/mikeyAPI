@@ -24,6 +24,7 @@ exports.getLinks = function(req, res) {
       if ( err ) {
         winston.doMongoError(err, res);
       } else {
+        linkHelpers.addSignedURLs(foundLinks, userId)
         res.send( foundLinks );
       }
     }
