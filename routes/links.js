@@ -3,6 +3,7 @@ var serverCommon = process.env.SERVER_COMMON;
 var LinkModel = require(serverCommon + '/schema/link').LinkModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
   , constants = require('../constants')
+  , linkHelpers = require('../lib/linkHelpers')
 
 var routeLinks = this;
 
@@ -38,11 +39,12 @@ exports.getLinks = function(req, res) {
       
   query.sort ('-sentDate')
     .limit (limit)
-    .select(constants.DEFAULT_FIELD_LINK)
+    .select(constants.DEFAULT_FIELDS_LINK)
     .exec(function(err, foundLinks) {
       if ( err ) {
         winston.doMongoError(err, res);
       } else {
+        linkHelpers.addSignedURLs(foundLinks, userId)
         res.send( foundLinks );
       }
     }
