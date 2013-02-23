@@ -39,11 +39,11 @@ exports.getAttachments = function(req, res) {
       if ( err ) {
         winston.doMongoError(err, res);
       } else {
-        attachmentHelpers.addSignedURLs(foundAttachments, userId)
+        attachmentHelpers.addSignedURLs(foundAttachments, userId);
         res.send( foundAttachments );
       }
     });
-}
+};
 
 exports.goToAttachmentSignedURL = function(req, res) {
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
@@ -74,7 +74,7 @@ exports.goToAttachmentSignedURL = function(req, res) {
         if ( contentType &&
             ( ( contentType.indexOf('image/') === 0 )
             || ( contentType == 'application/pdf' ) ) ) {
-          
+
           //headers['response-content-disposition']  = 'inline;filename=' + foundAttachment.filename;
         }
 
@@ -83,4 +83,4 @@ exports.goToAttachmentSignedURL = function(req, res) {
       }
     });
   }
-}
+};
