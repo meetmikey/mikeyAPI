@@ -3,6 +3,7 @@ var serverCommon = process.env.SERVER_COMMON;
 var LinkModel = require(serverCommon + '/schema/link').LinkModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
   , constants = require('../constants')
+  , linkHelpers = require('../lib/linkHelpers')
 
 var routeLinks = this;
 
