@@ -20,7 +20,7 @@ exports.getLinks = function(req, res) {
 
   LinkModel.find({userId:userId, 'isPromoted':true})
     .sort ('-sentDate')
-    .select(constants.DEFAULT_FIELD_LINK)
+    .select(constants.DEFAULT_FIELDS_LINK)
     .exec(function(err, foundLinks) {
       if ( err ) {
         winston.doMongoError(err, res);
