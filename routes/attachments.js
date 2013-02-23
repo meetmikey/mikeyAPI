@@ -9,6 +9,7 @@ var conf = require(serverCommon + '/conf')
   , s3Utils = require(serverCommon + '/lib/s3Utils')
   , constants = require('../constants')
   , attachmentHelpers = require ('../lib/attachmentHelpers')
+  , activeConnectionHelpers = require ('../lib/activeConnectionHelpers')
 
 var routeAttachments = this;
 
@@ -25,7 +26,8 @@ exports.getAttachments = function(req, res) {
   var after = req.query.after;
   var limit = req.query.limit;
 
-
+  // update last access time
+  activeConnectionHelpers.updateLastAccessTime (req.user);
 
   if (constants.USE_SPOOFED_USER) {
     userId = constants.SPOOFED_USER_ID;
