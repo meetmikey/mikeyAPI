@@ -26,3 +26,4 @@ define('DEFAULT_FIELDS_ATTACHMENT', 'filename contentType sentDate sender recipi
 define('DEFAULT_FIELDS_LINK', 'url resolvedURL sentDate sender recipients image title text comparableURLHash')
 define('URL_EXPIRE_TIME_MINUTES', 30)
 define('SEARCH_THRESHOLD', .01)
+define('ACTIVE_CONNECTION_REQUEUE_CUTOFF', 60*1000*2) // 2 minutes
