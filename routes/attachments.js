@@ -9,6 +9,7 @@ var conf = require(serverCommon + '/conf')
   , s3Utils = require(serverCommon + '/lib/s3Utils')
   , constants = require('../constants')
   , attachmentHelpers = require ('../lib/attachmentHelpers')
+  , activeConnectionHelpers = require ('../lib/activeConnectionHelpers')
 
 var routeAttachments = this;
 
@@ -17,7 +18,7 @@ exports.getAttachments = function(req, res) {
 
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
     winston.warn('routeAttachments: getAttachments: missing userId');
-    res.send(400, 'missing userId');
+    res.send(400, 'bad request');
   }
 
   var userId = req.user._id;
@@ -25,15 +26,29 @@ exports.getAttachments = function(req, res) {
   var after = req.query.after;
   var limit = req.query.limit;
 
-
+  // update last access time
+  activeConnectionHelpers.updateLastAccessTime (req.user);
+  
+  if (!limit) {
+    limit = 50
+  }
 
   if (constants.USE_SPOOFED_USER) {
     userId = constants.SPOOFED_USER_ID;
   }
 
-  AttachmentModel.find({userId:userId})
-    .sort ('-sentDate')
-    .limit ()
+  var query = AttachmentModel.find({userId:userId})
+  
+  if (before) {
+    query.where ('sentDate').lt (before)
+  }
+
+  if (after) {
+    query.where ('sentDate').gt (after)    
+  }
+
+  query.sort ('-sentDate')
+    .limit (limit)
     .select(constants.DEFAULT_FIELDS_ATTACHMENT)
     .exec(function(err, foundAttachments) {
       if ( err ) {
@@ -43,7 +58,50 @@ exports.getAttachments = function(req, res) {
         res.send( foundAttachments );
       }
     });
-};
+}
+
+exports.deleteAttachment = function (req, res) {
+
+  var userId = req.user._id;
+  var attachmentId = req.params.attachmentId;
+
+  AttachmentModel.update ({userId : userId, _id : attachmentId}, 
+    {$set : {isDeleted : true}}, 
+    function (err, num) {
+      if (err) {
+        winston.doMongoError (err, res)
+      }
+      else {
+        console.log ('num affected', num)
+        res.send (200)
+      }
+    });
+
+}
+
+exports.deleteAttachmentBulk = function (req, res) {
+
+  var userId = req.user._id;
+  var attachmentIds = req.body.attachmentIds;
+
+  if (!attachmentIds) {
+    res.send ('bad request: must specify attachmentIds', 400);
+    return;
+  }
+
+  AttachmentModel.update ({userId : userId, _id : {$in : attachmentIds}}, 
+    {$set : {isDeleted : true}},
+    {multi : true},
+    function (err, num) {
+      if (err) {
+        winston.doMongoError (err, res)
+      }
+      else {
+        console.log ('num affected', num)
+        res.send ('deleted attachment', 200)
+      }
+    });
+}
 
 exports.goToAttachmentSignedURL = function(req, res) {
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
@@ -83,4 +141,4 @@ exports.goToAttachmentSignedURL = function(req, res) {
       }
     });
   }
-};
+}

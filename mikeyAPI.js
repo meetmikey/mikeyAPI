@@ -93,3 +93,9 @@ app.get('/attachmentURL/:attachmentId',  passport.ensureAuthenticated, routeAtta
 app.get('/link',  passport.ensureAuthenticated, routeLinks.getLinks);
 
 app.get('/search',  passport.ensureAuthenticated, routeSearch.getSearchResults);
+
+app.delete('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.deleteAttachment)
+app.delete('/attachment', passport.ensureAuthenticated, routeAttachments.deleteAttachmentBulk)
+
+app.delete('/link/:linkId', passport.ensureAuthenticated, routeLinks.deleteLink)
+app.delete('/link', passport.ensureAuthenticated, routeLinks.deleteLinkBulk)

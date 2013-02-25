@@ -22,7 +22,8 @@ define('SERVER_COMMON', process.env.SERVER_COMMON)
 define('USE_SPOOFED_USER', false)
 define('SPOOFED_USER_ID', '5119c7b60746d47552000005')
 
-define('DEFAULT_FIELDS_ATTACHMENT', 'filename contentType sentDate sender recipients image hash fileSize')
-define('DEFAULT_FIELDS_LINK', 'url resolvedURL sentDate sender recipients image title text comparableURLHash')
+define('DEFAULT_FIELDS_ATTACHMENT', 'filename contentType sentDate sender recipients image hash fileSize isDeleted')
+define('DEFAULT_FIELDS_LINK', 'url resolvedURL sentDate sender recipients image title text comparableURLHash isDeleted')
 define('URL_EXPIRE_TIME_MINUTES', 30)
 define('SEARCH_THRESHOLD', .01)
+define('ACTIVE_CONNECTION_REQUEUE_CUTOFF', 60*1000*2) // 2 minutes
