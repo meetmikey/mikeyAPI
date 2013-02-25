@@ -18,7 +18,7 @@ exports.getAttachments = function(req, res) {
 
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
     winston.warn('routeAttachments: getAttachments: missing userId');
-    res.send(400, 'missing userId');
+    res.send(400, 'bad request');
   }
 
   var userId = req.user._id;
@@ -56,6 +56,49 @@ exports.getAttachments = function(req, res) {
       } else {
         attachmentHelpers.addSignedURLs(foundAttachments, userId);
         res.send( foundAttachments );
+      }
+    });
+}
+
+exports.deleteAttachment = function (req, res) {
+
+  var userId = req.user._id;
+  var attachmentId = req.params.attachmentId;
+
+  AttachmentModel.update ({userId : userId, _id : attachmentId}, 
+    {$set : {isDeleted : true}}, 
+    function (err, num) {
+      if (err) {
+        winston.doMongoError (err, res)
+      }
+      else {
+        console.log ('num affected', num)
+        res.send (200)
+      }
+    });
+
+}
+
+exports.deleteAttachmentBulk = function (req, res) {
+
+  var userId = req.user._id;
+  var attachmentIds = req.body.attachmentIds;
+
+  if (!attachmentIds) {
+    res.send ('bad request: must specify attachmentIds', 400);
+    return;
+  }
+
+  AttachmentModel.update ({userId : userId, _id : {$in : attachmentIds}}, 
+    {$set : {isDeleted : true}},
+    {multi : true},
+    function (err, num) {
+      if (err) {
+        winston.doMongoError (err, res)
+      }
+      else {
+        console.log ('num affected', num)
+        res.send ('deleted attachment', 200)
       }
     });
 }

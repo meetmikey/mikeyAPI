@@ -50,3 +50,45 @@ exports.getLinks = function(req, res) {
     }
   );
 }
+
+
+exports.deleteLink = function (req, res) {
+
+  var userId = req.user._id;
+  var linkId = req.params.linkId;
+
+  LinkModel.update ({userId : userId, _id : linkId}, 
+    {$set : {isDeleted : true}}, 
+    function (err, num) {
+      if (err) {
+        winston.doMongoError (err, res)
+      }
+      else {
+        res.send (200)
+      }
+    });
+
+}
+
+exports.deleteLinkBulk = function (req, res) {
+
+  var userId = req.user._id;
+  var linkIds = req.body.linkIds;
+
+  if (!linkIds) {
+    res.send ('bad request: must specify linkIds', 400);
+    return;
+  }
+
+  LinkModel.update ({userId : userId, _id : {$in : linkIds}}, 
+    {$set : {isDeleted : true}},
+    {multi : true},
+    function (err, num) {
+      if (err) {
+        winston.doMongoError (err, res)
+      }
+      else {
+        res.send (200)
+      }
+    });
+}
