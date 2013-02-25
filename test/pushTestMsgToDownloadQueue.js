@@ -4,7 +4,7 @@ var constants = require('../constants'),
     mongoose = require(constants.SERVER_COMMON + '/lib/mongooseConnect').mongoose
 
 var UserModel = mongoose.model ('User')
-var ActiveConnectionModel = mongoose.model ('ActiveConnection')
+
 /*
 var user = {
   googleID: "106939156771784101693",
@@ -34,23 +34,3 @@ sqsConnect.addMessageToMailDownloadQueue (user, function (err, msg) {
     winston.error ('Could not add message to start downloading user data', user._id)
   }
 })
-/*
-
-var connection = new ActiveConnectionModel ({
-  userId : user._id
-})
-
-connection.save (function (err) {
-
-  if (err) { console.log (err); return;}
-
-  sqsConnect.addMessageToMailUpdateQueue (user, function (err, msg){
-    if (err) {
-      winston.error ('Could not add message to start downloading user data', user._id)
-    }
-
-    console.log (msg)
-  })
-
-
-})*/
