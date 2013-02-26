@@ -11,6 +11,7 @@ var express             = require('express'),
     winston             = require(constants.SERVER_COMMON + '/lib/winstonWrapper').winston,
     routeLinks          = require('./routes/links'),
     routeSearch         = require('./routes/search'),
+    routeUser           = require('./routes/user'),
     routeAttachments    = require('./routes/attachments');
 
 var options = {key: fs.readFileSync('keyslocal/privateKey.key'),
@@ -99,3 +100,5 @@ app.delete('/attachment', passport.ensureAuthenticated, routeAttachments.deleteA
 
 app.delete('/link/:linkId', passport.ensureAuthenticated, routeLinks.deleteLink)
 app.delete('/link', passport.ensureAuthenticated, routeLinks.deleteLinkBulk)
+
+app.get('/user', routeUser.getCurrentUser)
