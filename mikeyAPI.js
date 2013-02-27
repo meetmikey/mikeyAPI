@@ -5,6 +5,7 @@ var express             = require('express'),
     mongoose            = require(constants.SERVER_COMMON + '/lib/mongooseConnect').mongoose,
     GoogleStrategy      = require('passport-google-oauth').OAuth2Strategy,
     conf                = require(constants.SERVER_COMMON + '/conf'),
+    mikeyAPIConf        = require('./conf'),
     fs                  = require('fs'),
     https               = require('https'),
     onboardUserHelpers  = require ('./lib/onboardUserHelpers'),
@@ -14,8 +15,6 @@ var express             = require('express'),
     routeUser           = require('./routes/user'),
     routeAttachments    = require('./routes/attachments');
 
-var options = {key: fs.readFileSync('keyslocal/privateKey.key'),
-  cert: fs.readFileSync('keyslocal/alpha.magicnotebook.com.crt')};
 
 var app = module.exports = express();
 
@@ -37,18 +36,34 @@ app.configure(function() {
   app.use(passport.initialize());
 });
 
+var options = {};
 app.configure('localhost', function(){
-
-})
+  options = {
+      key: fs.readFileSync( mikeyAPIConf.sslKeysLocal.keyFile )
+    , cert: fs.readFileSync( mikeyAPIConf.sslKeysLocal.crtFile )
+  };
+});
 
 app.configure('development', function(){
-
-
-})
+  options = {
+      key: fs.readFileSync(mikeyAPIConf.sslKeys.keyFile)
+    , cert: fs.readFileSync(mikeyAPIConf.sslKeys.crtFile)
+    , ca: [
+          fs.readFileSync(mikeyAPIConf.sslKeys.caFile1)
+        , fs.readFileSync(mikeyAPIConf.sslKeys.caFile2)
+      ]
+  };
+});
 
 app.configure('production', function(){
-
-
+  options = {
+      key: fs.readFileSync(mikeyAPIConf.sslKeys.keyFile)
+    , cert: fs.readFileSync(mikeyAPIConf.sslKeys.crtFile)
+    , ca: [
+          fs.readFileSync(mikeyAPIConf.sslKeys.caFile1)
+        , fs.readFileSync(mikeyAPIConf.sslKeys.caFile2)
+      ]
+  };
 })
 
 app.get('/auth/google',
