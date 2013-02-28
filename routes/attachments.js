@@ -37,7 +37,7 @@ exports.getAttachments = function(req, res) {
     userId = constants.SPOOFED_USER_ID;
   }
 
-  var query = AttachmentModel.find({userId:userId})
+  var query = AttachmentModel.find({userId:userId, 'isPromoted':true});
   
   if (before) {
     query.where ('sentDate').lt (before)
