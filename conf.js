@@ -1,15 +1,25 @@
 
 var environment = process.env.NODE_ENV;
+var buildDir = process.env.MIKEY_BUILD;
+
+var keyDir = './keysLocal/'
+
+if (environment == 'production') {
+  keyDir = buildDir + '/keys/';
+
+} else if (environment == 'development') {
+  keyDir = buildDir + '/keys/';
+}
 
 module.exports = {
     sslKeys: {
-        keyFile: './keys/meetmikey.key'
-      , crtFile: './keys/meetmikey.com.crt'
-      , caFile1: './keys/gd_cert1.crt'
-      , caFile2: './keys/gd_cert2.crt'
+        keyFile: keyDir + 'meetmikey.key'
+      , crtFile: keyDir + 'meetmikey.com.crt'
+      , caFile1: keyDir + 'gd_cert1.crt'
+      , caFile2: keyDir + 'gd_cert2.crt'
     }
   , sslKeysLocal: {
-      keyFile: './keysLocal/privateKey.key'
-    , crtFile: './keysLocal/local.meetmikey.com.crt'
+      keyFile: keyDir + 'privateKey.key'
+    , crtFile: keyDir + 'local.meetmikey.com.crt'
   }
 };
