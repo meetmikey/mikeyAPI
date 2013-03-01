@@ -16,11 +16,11 @@ var express             = require('express'),
     routeAttachments    = require('./routes/attachments');
 
 
-var app = module.exports = express();
+process.on('uncaughtException', function (err) {
+  winston.doError('uncaughtException:', {err : err});
+  process.exit(1)});
 
-//TODO: replace with redis store
-var MemoryStore = express.session.MemoryStore,
-    sessionStore = new MemoryStore();
+var app = module.exports = express();
 
 app.configure(function() {
   app.engine('html', require('ejs').__express)
@@ -28,7 +28,6 @@ app.configure(function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
   app.use(express.bodyParser())
   app.use(express.cookieParser(conf.express.secret));
-  app.use(express.session({store: sessionStore}));
   app.use(express.methodOverride())
   app.use(express.static(__dirname + '/public'))
   app.use(express.compress())
@@ -90,6 +89,26 @@ app.post('/auth/refresh', passport.authenticate('refresh'), function(req, res) {
   res.send(req.user);
 });
 
+app.get('/attachment',  passport.ensureAuthenticated, routeAttachments.getAttachments);
+
+app.get('/attachmentURL/:attachmentId',  passport.ensureAuthenticated, routeAttachments.goToAttachmentSignedURL);
+
+app.get('/link',  passport.ensureAuthenticated, routeLinks.getLinks);
+
+app.get('/search',  passport.ensureAuthenticated, routeSearch.getSearchResults);
+
+app.delete('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.deleteAttachment)
+
+app.delete('/attachment', passport.ensureAuthenticated, routeAttachments.deleteAttachmentBulk)
+
+app.delete('/link/:linkId', passport.ensureAuthenticated, routeLinks.deleteLink)
+
+app.delete('/link', passport.ensureAuthenticated, routeLinks.deleteLinkBulk)
+
+app.get('/user', routeUser.getCurrentUser)
+
+
+
 https.createServer(options, app).listen(8080, function() {
   console.log('mikey api running on port 8080');
 });
@@ -102,18 +121,3 @@ https.createServer(options, app).listen(8080, function() {
 //   auth page.
 
 
-app.get('/attachment',  passport.ensureAuthenticated, routeAttachments.getAttachments);
-
-app.get('/attachmentURL/:attachmentId',  passport.ensureAuthenticated, routeAttachments.goToAttachmentSignedURL);
-
-app.get('/link',  passport.ensureAuthenticated, routeLinks.getLinks);
-
-app.get('/search',  passport.ensureAuthenticated, routeSearch.getSearchResults);
-
-app.delete('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.deleteAttachment)
-app.delete('/attachment', passport.ensureAuthenticated, routeAttachments.deleteAttachmentBulk)
-
-app.delete('/link/:linkId', passport.ensureAuthenticated, routeLinks.deleteLink)
-app.delete('/link', passport.ensureAuthenticated, routeLinks.deleteLinkBulk)
-
-app.get('/user', routeUser.getCurrentUser)
