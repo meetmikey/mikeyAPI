@@ -17,8 +17,9 @@ var express             = require('express'),
 
 
 process.on('uncaughtException', function (err) {
-  winston.doError('uncaughtException:', {err : err});
-  process.exit(1)});
+  winston.doError('uncaughtException:', {stack : err.stack, message : err.message});
+  process.exit(1);
+});
 
 var app = module.exports = express();
 
