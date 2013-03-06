@@ -67,12 +67,12 @@ app.configure('production', function(){
 })
 
 app.get('/auth/google',
-        passport.authenticate('google', { accessType: 'offline',
-                                          approvalPrompt: 'force',
-                                          scope: ['https://www.googleapis.com/auth/userinfo.profile',
-                                                  'https://www.googleapis.com/auth/userinfo.email',
-                                                  'https://mail.google.com/',
-                                                  'https://www.googleapis.com/auth/drive.readonly'] }
+    passport.authenticate('google', { accessType: 'offline',
+                                      approvalPrompt: 'force',
+                                      scope: ['https://www.googleapis.com/auth/userinfo.profile',
+                                              'https://www.googleapis.com/auth/userinfo.email',
+                                              'https://mail.google.com/',
+                                              'https://www.googleapis.com/auth/drive.readonly'] }
 ));
 
 app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/oauth_failure'}), function(req, res) {
