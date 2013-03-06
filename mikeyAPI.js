@@ -13,7 +13,8 @@ var express             = require('express'),
     routeLinks          = require('./routes/links'),
     routeSearch         = require('./routes/search'),
     routeUser           = require('./routes/user'),
-    routeAttachments    = require('./routes/attachments');
+    routeAttachments    = require('./routes/attachments'),
+    routeImages         = require('./routes/images');
 
 
 process.on('uncaughtException', function (err) {
@@ -93,6 +94,8 @@ app.post('/auth/refresh', passport.authenticate('refresh'), function(req, res) {
 app.get('/attachment',  passport.ensureAuthenticated, routeAttachments.getAttachments);
 
 app.get('/attachmentURL/:attachmentId',  passport.ensureAuthenticated, routeAttachments.goToAttachmentSignedURL);
+
+app.get('/image',  passport.ensureAuthenticated, routeImages.getImages);
 
 app.get('/link',  passport.ensureAuthenticated, routeLinks.getLinks);
 
