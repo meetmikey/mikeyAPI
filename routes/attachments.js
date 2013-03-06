@@ -9,55 +9,12 @@ var conf = require(serverCommon + '/conf')
   , s3Utils = require(serverCommon + '/lib/s3Utils')
   , constants = require('../constants')
   , attachmentHelpers = require ('../lib/attachmentHelpers')
-  , activeConnectionHelpers = require ('../lib/activeConnectionHelpers')
 
 var routeAttachments = this;
 
 
 exports.getAttachments = function(req, res) {
-
-  if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
-    winston.warn('routeAttachments: getAttachments: missing userId');
-    res.send(400, 'bad request');
-  }
-
-  var userId = req.user._id;
-  var before = req.query.before;
-  var after = req.query.after;
-  var limit = req.query.limit;
-
-  // update last access time
-  activeConnectionHelpers.updateLastAccessTime (req.user);
-  
-  if (!limit) {
-    limit = 50
-  }
-
-  if (constants.USE_SPOOFED_USER) {
-    userId = constants.SPOOFED_USER_ID;
-  }
-
-  var query = AttachmentModel.find({userId:userId, 'isPromoted':true});
-  
-  if (before) {
-    query.where ('sentDate').lt (before)
-  }
-
-  if (after) {
-    query.where ('sentDate').gt (after)    
-  }
-
-  query.sort ('-sentDate')
-    .limit (limit)
-    .select(constants.DEFAULT_FIELDS_ATTACHMENT)
-    .exec(function(err, foundAttachments) {
-      if ( err ) {
-        winston.doMongoError(err, res);
-      } else {
-        attachmentHelpers.addSignedURLs(foundAttachments, userId);
-        res.send( foundAttachments );
-      }
-    });
+  attachmentHelpers.getFiles( req, res, false );
 }
 
 exports.deleteAttachment = function (req, res) {

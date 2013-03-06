@@ -7,7 +7,7 @@
     "passport": "~0.1.15",
     "passport-google-oauth": "~0.1.5",
     "mongoose": "~3.5.5",
-    "async": ">=0.1.22",
+    "async": ">=0.2.6",
     "oauth": "~0.9.8",
     "ejs": "~0.8.3",
     "express-validator" : "0.3.1"
