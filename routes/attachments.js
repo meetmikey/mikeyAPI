@@ -9,6 +9,7 @@ var conf = require(serverCommon + '/conf')
   , s3Utils = require(serverCommon + '/lib/s3Utils')
   , constants = require('../constants')
   , attachmentHelpers = require ('../lib/attachmentHelpers')
+  , cloudStorageUtils = require (serverCommon + '/lib/cloudStorageUtils')
 
 var routeAttachments = this;
 
@@ -82,18 +83,7 @@ exports.goToAttachmentSignedURL = function(req, res) {
         res.send(400, 'attachment not found');
 
       } else {
-        var s3Path = s3Utils.getAttachmentS3Path(foundAttachment);
-
-        var headers = {};
-        var contentType = foundAttachment.contentType;
-        if ( contentType &&
-            ( ( contentType.indexOf('image/') === 0 )
-            || ( contentType == 'application/pdf' ) ) ) {
-
-          //headers['response-content-disposition']  = 'inline;filename=' + foundAttachment.filename;
-        }
-
-        var signedURL = s3Utils.signedURL(s3Path, routeAttachments.URL_EXPIRE_TIME_MINUTES, headers);
+        var signedURL = cloudStorageUtils.signedURL(foundAttachment, routeAttachments.URL_EXPIRE_TIME_MINUTES);
         res.redirect(signedURL);
       }
     });
