@@ -9,12 +9,17 @@ var conf = require(serverCommon + '/conf')
   , constants = require('../constants')
   , attachmentHelpers = require ('../lib/attachmentHelpers')
   , cloudStorageUtils = require (serverCommon + '/lib/cloudStorageUtils')
+  , activeConnectionHelpers = require ('../lib/activeConnectionHelpers');
 
 var routeAttachments = this;
 
 
 exports.getAttachments = function(req, res) {
   attachmentHelpers.getFiles( req, res, false );
+
+  // update last access time
+  activeConnectionHelpers.updateLastAccessTime (req.user);
+  
 }
 
 exports.deleteAttachment = function (req, res) {
