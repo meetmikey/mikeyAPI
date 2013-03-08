@@ -6,7 +6,6 @@ var conf = require(serverCommon + '/conf')
   , mailUtils = require(serverCommon + '/lib/mailUtils')
   , AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
-  , s3Utils = require(serverCommon + '/lib/s3Utils')
   , searchHelpers = require ('../lib/searchHelpers')
   , constants = require('../constants')
 

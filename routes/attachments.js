@@ -6,7 +6,6 @@ var conf = require(serverCommon + '/conf')
   , mailUtils = require(serverCommon + '/lib/mailUtils')
   , AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
-  , s3Utils = require(serverCommon + '/lib/s3Utils')
   , constants = require('../constants')
   , attachmentHelpers = require ('../lib/attachmentHelpers')
   , cloudStorageUtils = require (serverCommon + '/lib/cloudStorageUtils')
@@ -83,7 +82,9 @@ exports.goToAttachmentSignedURL = function(req, res) {
         res.send(400, 'attachment not found');
 
       } else {
-        var signedURL = cloudStorageUtils.signedURL(foundAttachment, routeAttachments.URL_EXPIRE_TIME_MINUTES);
+        console.log (foundAttachment)
+        var path = cloudStorageUtils.getAttachmentPath(foundAttachment);
+        var signedURL = cloudStorageUtils.signedURL(path, routeAttachments.URL_EXPIRE_TIME_MINUTES, foundAttachment);
         res.redirect(signedURL);
       }
     });
