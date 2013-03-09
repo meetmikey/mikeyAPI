@@ -87,7 +87,6 @@ exports.goToAttachmentSignedURL = function(req, res) {
         res.send(400, 'attachment not found');
 
       } else {
-        console.log (foundAttachment)
         var path = cloudStorageUtils.getAttachmentPath(foundAttachment);
         var signedURL = cloudStorageUtils.signedURL(path, routeAttachments.URL_EXPIRE_TIME_MINUTES, foundAttachment);
         res.redirect(signedURL);
