@@ -111,6 +111,11 @@ app.delete('/link', passport.ensureAuthenticated, routeLinks.deleteLinkBulk)
 
 app.get('/user', routeUser.getCurrentUser)
 
+//Used by the load balancer to check whether this API is working.
+//mv views/index.html to stop traffic from the load balancer.
+app.get('/index.html', function(req, res) {
+  res.render('index.html');
+});
 
 
 https.createServer(options, app).listen(8080, function() {
