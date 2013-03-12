@@ -1,3 +1,8 @@
+var serverCommon = process.env.SERVER_COMMON;
+
+var winston = require (serverCommon + '/lib/winstonWrapper').winston;
+winston.logBreak();
+
 var express             = require('express'),
     passport            = require('./lib/passport'),
     constants           = require('./constants'),
@@ -9,7 +14,6 @@ var express             = require('express'),
     fs                  = require('fs'),
     https               = require('https'),
     onboardUserHelpers  = require ('./lib/onboardUserHelpers'),
-    winston             = require(constants.SERVER_COMMON + '/lib/winstonWrapper').winston,
     routeLinks          = require('./routes/links'),
     routeSearch         = require('./routes/search'),
     routeUser           = require('./routes/user'),
