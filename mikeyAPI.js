@@ -21,6 +21,11 @@ var express             = require('express'),
     routeImages         = require('./routes/images');
 
 
+// clear visual indication in logs of restart
+console.log ('\n\n\n\n\n\n\n\n\n\n\n\n\n');
+console.error ('\n\n\n\n\n\n\n\n\n\n\n\n\n');
+
+
 process.on('uncaughtException', function (err) {
   winston.doError('uncaughtException:', {stack : err.stack, message : err.message});
   process.exit(1);
