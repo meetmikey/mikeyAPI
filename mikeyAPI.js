@@ -18,7 +18,24 @@ var express             = require('express'),
     routeSearch         = require('./routes/search'),
     routeUser           = require('./routes/user'),
     routeAttachments    = require('./routes/attachments'),
+    memwatch            = require('memwatch'),
     routeImages         = require('./routes/images');
+
+if (process.env.NODE_ENV == 'localhost' || process.env.NODE_ENV == 'development') {
+  var hd = new memwatch.HeapDiff();
+
+  memwatch.on('leak', function(info) {
+    winston.doError ('LEAK REPORT', {info : info});
+  });
+
+  memwatch.on('stats', function(stats) { 
+    winston.doInfo ('STATS REPORT', {stats : stats});
+    var diff = hd.end();
+
+    winston.doInfo ('HEAP DIFF', {diff :diff});
+    hd = new memwatch.HeapDiff();
+  });
+}
 
 process.on('uncaughtException', function (err) {
   winston.doError('uncaughtException:', {stack : err.stack, message : err.message});
