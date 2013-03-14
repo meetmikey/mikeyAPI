@@ -17,8 +17,6 @@ else{
   define('ENV', 'localhost');
 }
 
-define('SERVER_COMMON', process.env.SERVER_COMMON);
-
 define('USE_SPOOFED_USER', false);
 define('SPOOFED_USER_ID', '5119c7b60746d47552000005');
 
