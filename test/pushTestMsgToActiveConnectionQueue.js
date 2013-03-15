@@ -1,7 +1,9 @@
+var serverCommon = process.env.SERVER_COMMON;
+
 var constants = require('../constants'),
-    sqsConnect        = require(constants.SERVER_COMMON + '/lib/sqsConnect'),
+    sqsConnect        = require(serverCommon + '/lib/sqsConnect'),
     fs = require ('fs'),
-    mongoose = require(constants.SERVER_COMMON + '/lib/mongooseConnect').mongoose
+    mongoose = require(serverCommon + '/lib/mongooseConnect').mongoose
 
 var UserModel = mongoose.model ('User')
 var ActiveConnectionModel = mongoose.model ('ActiveConnection')
