@@ -5,46 +5,24 @@ var constants = require('../constants'),
 
 var UserModel = mongoose.model ('User')
 
-/*
+
 var user = {
-  googleID: "106939156771784101693",
-  accessToken: "ya29.AHES6ZTRzRuY0qy5UR0THtDRhLVxDqJqUBgBPmbmglQ",
-  displayName: "Sagar Mehta",
-  firstName: "Sagar",
-  lastName: "Mehta",
-  email: "sagar@magicnotebook.com",
-  refreshToken: "1/foOYDyaQOkcgALX5KIMidX3REOScB0lr-yB-F5UzRdM",
-  locale: "en",
-  hostedDomain: "magicnotebook.com",
-  _id: "5119c7b60746d47552000005",
-  timestamp: "2013-02-12T04:40:22.386Z",
-  gmailScrapeRequested: false,
-  __v: 0
-}
-*/
-/*
-var user = {"__v":0,"googleID":"102110918656901976675","accessToken":"ya29.AHES6ZSBEdLKxZVw1Rq8_Oxr78PnkY9MNvz5QwbAQqXu_DkR0fFyEQ","displayName":"Sagar Mehta","firstName":"Sagar","lastName":"Mehta","email":"svmknicks33@gmail.com","refreshToken":"1/io7ydNijBKUl2iMxVJ1ti5D4vzFseWwLOfdbC1Awq_A","gender":"male","locale":"en","_id":"511854db5b47a4bf14000004","timestamp":"2013-02-11T02:18:03.548Z","gmailScrapeRequested":false}
-*/
-/*
-var user = {"__v":0,"locale":"en","refreshToken":"1/9x7mwZRpFbJ2GFF14aNSavyxaW6EgLv3fXKuLy9-q2s","googleID":"115882407960585095714","accessToken":"ya29.AHES6ZTZ7QLpyKbfKAXg-anCq6ymWKxGOTHcUX0idv5vmTUh7dU7Jw","displayName":"Sagar Mehta","firstName":"Sagar","lastName":"Mehta","email":"sagar@mikeyteam.com","_id":"5113108d9f2459d70c000004","timestamp":"2013-02-07T02:25:17.361Z","linksExtracted":false,"attachmentsExtracted":false,"gmailScrapeRequested":false}
-*/
-var user = {
-  "googleID" : "104927852848168139591",
-  "accessToken" : "ya29.AHES6ZQlJrR7UpGffHxW2kE-LwJ5W5nMVm5qEQszkyYdv6Y",
-  "displayName" : "Andrew Lockhart",
-  "firstName" : "Andrew",
-  "lastName" : "Lockhart",
-  "email" : "andrewjameslockhart@gmail.com",
-  "refreshToken" : "1/0T0Llhq_O8EevoSiMpf6japhdtHezut5jkwznfBXWVQ",
-  "gender" : "male",
-  "locale" : "en-GB",
-  "picture" : "https://lh4.googleusercontent.com/-wHFwsh7hVno/AAAAAAAAAAI/AAAAAAAAB2A/uEEMG7RDlIg/photo.jpg",
-  "expiresAt" : "2013-03-01T20:31:37.908Z",
-  "_id" : "51310219ce9d82443e000006",
-  "timestamp" : "2013-03-01T19:31:37.910Z",
+  "googleID" : "115882407960585095714",
+  "accessToken" : "ya29.AHES6ZTv6mSGkwsWpxgP-je_-bzFIRhrR5Hwn8jirmxEiPNch3XacA",
+  "displayName" : "Sagar Mehta",
+  "firstName" : "Sagar",
+  "lastName" : "Mehta",
+  "email" : "sagar@mikeyteam.com",
+  "refreshToken" : "1/om8yXo32__hN15qHV7auZo8pH_j0yFd_Ss0S6vkMOAQ",
+  "locale" : "en",
+  "hostedDomain" : "mikeyteam.com",
+  "expiresAt" : "2013-03-15T19:22:11.887Z",
+  "_id" : "514366d3ac0c2dba43000005",
+  "timestamp" : "2013-03-15T18:22:11.889Z",
   "gmailScrapeRequested" : true,
   "__v" : 0
 }
+
 
 
 sqsConnect.addMessageToMailDownloadQueue (user, function (err, msg) {
