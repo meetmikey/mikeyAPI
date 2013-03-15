@@ -2,6 +2,7 @@ var serverCommon = process.env.SERVER_COMMON;
 
 var winston = require (serverCommon + '/lib/winstonWrapper').winston;
 winston.logBreak();
+winston.doInfo('mikeyAPI app running...');
 
 var express             = require('express'),
     passport            = require('./lib/passport'),
