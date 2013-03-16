@@ -26,8 +26,9 @@ var initActions = [
 
 //initApp() will not callback an error.
 //If something fails, it will just exit the process.
-appInitUtils.initApp( 'mikeyAPI', initActions, function() {
+appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
+  /*
   if (process.env.NODE_ENV == 'localhost' || process.env.NODE_ENV == 'development') {
     var hd = new memwatch.HeapDiff();
 
@@ -42,7 +43,7 @@ appInitUtils.initApp( 'mikeyAPI', initActions, function() {
       winston.doInfo ('HEAP DIFF', {diff :diff});
       hd = new memwatch.HeapDiff();
     });
-  }
+  }*/
 
   var app = module.exports = express();
 
