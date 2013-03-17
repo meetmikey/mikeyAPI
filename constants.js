@@ -24,6 +24,7 @@ define('DEFAULT_FIELDS_ATTACHMENT', 'filename contentType sentDate sender recipi
 define('DEFAULT_FIELDS_LINK', 'url resolvedURL sentDate sender recipients image title summary comparableURLHash isDeleted gmMsgId gmMsgHex');
 define('URL_EXPIRE_TIME_MINUTES', 1440); //24 hours
 define('SEARCH_THRESHOLD', .05);
+define('ABSOLUTE_MIN_SCORE', .01);
 define('DEFAULT_MAX_ITEMS', 50);
 define('DEFAULT_RESOURCE_LIMIT', 50);
 define('DEFAULT_IMAGE_RESOURCE_LIMIT', 25);
