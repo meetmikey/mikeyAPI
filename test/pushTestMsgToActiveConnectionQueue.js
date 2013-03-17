@@ -3,10 +3,10 @@ var serverCommon = process.env.SERVER_COMMON;
 var constants = require('../constants'),
     sqsConnect        = require(serverCommon + '/lib/sqsConnect'),
     fs = require ('fs'),
-    mongoose = require(serverCommon + '/lib/mongooseConnect').mongoose
+    mongoose = require(serverCommon + '/lib/mongooseConnect').mongoose,
+    ActiveConnectionModel = require(serverCommon + '/schema/active').ActiveConnectionModel
 
 var UserModel = mongoose.model ('User')
-var ActiveConnectionModel = mongoose.model ('ActiveConnection')
 /*
 var user = {
   googleID: "106939156771784101693",
