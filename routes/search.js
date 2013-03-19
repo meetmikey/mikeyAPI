@@ -19,7 +19,7 @@ exports.getSearchResults = function(req, res) {
   var searchOptions = {
     query : req.query.query,
     from : 0,
-    size : 20,
+    size : 40,
     userId : req.user._id
   }
 
