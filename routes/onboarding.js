@@ -23,7 +23,7 @@ exports.getOnboardingState = function (req, res) {
         }
       }
       else {
-        res.send (500);
+        res.send ({'onboardingProgress' : 0});
       }
     });
 }
