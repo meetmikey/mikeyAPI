@@ -14,6 +14,7 @@ var express             = require('express'),
     routeSearch         = require('./routes/search'),
     routeUser           = require('./routes/user'),
     routeAttachments    = require('./routes/attachments'),
+    routeOnboarding     = require ('./routes/onboarding'),
     memwatch            = require('memwatch'),
     routeImages         = require('./routes/images'),
     winston             = require (serverCommon + '/lib/winstonWrapper').winston,
@@ -123,6 +124,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
   app.get('/link',  passport.ensureAuthenticated, routeLinks.getLinks);
 
   app.get('/search',  passport.ensureAuthenticated, routeSearch.getSearchResults);
+
+  app.get('/onboarding',  passport.ensureAuthenticated, routeOnboarding.getOnboardingState);
 
   app.delete('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.deleteAttachment)
 
