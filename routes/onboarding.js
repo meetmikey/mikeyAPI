@@ -16,14 +16,14 @@ exports.getOnboardingState = function (req, res) {
       }
       else if (foundState) {
         if (foundState.lastCompleted != 'markStoppingPoint') {
-          res.send ({'onboardingProgress' : 0});
+          res.send ({'progress' : 0});
         }
         else {
-          res.send ({'onboardingProgress' : 1});
+          res.send ({'progress' : 1});
         }
       }
       else {
-        res.send ({'onboardingProgress' : 0});
+        res.send ({'progress' : 0});
       }
     });
 }
