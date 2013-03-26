@@ -37,7 +37,7 @@ exports.getSearchResults = function(req, res) {
     searchHelpers.doSearch (searchOptions.query, searchOptions.userId, searchOptions.from, searchOptions.size, 
       function (err, result) {
       if (err) {
-        res.send ({'error' : err}, 400)
+        res.send ({'error' : err}, 500)
       }
       else {
         res.send (result)
