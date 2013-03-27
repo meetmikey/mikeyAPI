@@ -1,10 +1,11 @@
 var serverCommon = process.env.SERVER_COMMON;
 
-var LinkModel = require(serverCommon + '/schema/link').LinkModel
+var LinkModel       = require(serverCommon + '/schema/link').LinkModel
   , AttachmentModel = require (serverCommon + '/schema/attachment').AttachmentModel
-  , winston = require(serverCommon + '/lib/winstonWrapper').winston
-  , constants = require('../constants')
-  , linkHelpers = require('../lib/linkHelpers')
+  , winston         = require(serverCommon + '/lib/winstonWrapper').winston
+  , constants       = require('../constants')
+  , linkHelpers     = require('../lib/linkHelpers')
+  , async           = require ('async');
 
 var routeCounts = this;
 
@@ -20,22 +21,24 @@ exports.getCounts = function(req, res) {
 
   async.parallel ([
     function (callback) {    
-      LinkModel.count({userId:userId, 'isPromoted':true}), function (err, count) {
+      console.log ('here');
+      LinkModel.count({userId:userId, 'isPromoted':true}, function (err, count) {
         if (err) { return callback (winston.makeMongoError (err)); }
-        callback (count);
-      }
+        callback (null, count);
+        console.log ('count', count);
+      });
     },
     function (callback) {    
-      AttachmentModel.count({userId:userId, 'isPromoted':true, isImage : false}), function (err, count) {
+      AttachmentModel.count({userId:userId, 'isPromoted':true, isImage : false}, function (err, count) {
         if (err) { return callback (winston.makeMongoError (err)); }
-        callback (count);
-      }
+        callback (null, count);
+      });
     },
     function (callback) {    
-      AttachmentModel.count({userId:userId, 'isPromoted':true, isImage : true}), function (err, count) {
+      AttachmentModel.count({userId:userId, 'isPromoted':true, isImage : true}, function (err, count) {
         if (err) { return callback (winston.makeMongoError (err)); }
-        callback (count);
-      }
+        callback (null, count);
+      });
     }], function (err, data) {
         if (err){
           res.send ({error : 'internal error'}, 500);
