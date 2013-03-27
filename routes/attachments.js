@@ -73,9 +73,6 @@ exports.goToAttachmentSignedURL = function(req, res) {
     res.send(400, 'missing attachmentId');
   } else {
     var userId = req.user._id;
-    if (constants.USE_SPOOFED_USER) {
-      userId = constants.SPOOFED_USER_ID;
-    }
     var attachmentId = req.params.attachmentId;
 
     //Make sure the attachment belongs to this user...

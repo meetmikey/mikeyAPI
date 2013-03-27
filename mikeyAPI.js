@@ -15,6 +15,7 @@ var express             = require('express'),
     routeUser           = require('./routes/user'),
     routeAttachments    = require('./routes/attachments'),
     routeOnboarding     = require ('./routes/onboarding'),
+    routeCounts         = require ('./routes/counts'),
     memwatch            = require('memwatch'),
     routeImages         = require('./routes/images'),
     winston             = require (serverCommon + '/lib/winstonWrapper').winston,
@@ -127,15 +128,17 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.get('/onboarding',  passport.ensureAuthenticated, routeOnboarding.getOnboardingState);
 
-  app.delete('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.deleteAttachment)
+  app.delete('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.deleteAttachment);
 
-  app.delete('/attachment', passport.ensureAuthenticated, routeAttachments.deleteAttachmentBulk)
+  app.delete('/attachment', passport.ensureAuthenticated, routeAttachments.deleteAttachmentBulk);
 
-  app.delete('/link/:linkId', passport.ensureAuthenticated, routeLinks.deleteLink)
+  app.delete('/link/:linkId', passport.ensureAuthenticated, routeLinks.deleteLink);
 
-  app.delete('/link', passport.ensureAuthenticated, routeLinks.deleteLinkBulk)
+  app.delete('/link', passport.ensureAuthenticated, routeLinks.deleteLinkBulk);
 
-  app.get('/user', routeUser.getCurrentUser)
+  app.get('/user', routeUser.getCurrentUser);
+
+  app.get ('/counts', passport.ensureAuthenticated, routeCounts.getCounts);
 
   //Used by the load balancer to check whether this API is working.
   //mv views/index.html to stop traffic from the load balancer.

@@ -23,10 +23,6 @@ exports.getLinks = function(req, res) {
     limit = 50
   }
 
-  if (constants.USE_SPOOFED_USER) {
-    userId = constants.SPOOFED_USER_ID;
-  }
-
   var query = LinkModel.find({userId:userId, 'isPromoted':true})
 
   if (before) {
