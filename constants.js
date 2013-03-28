@@ -19,7 +19,8 @@ else{
 
 define('DEFAULT_FIELDS_ATTACHMENT', 'filename contentType sentDate sender recipients image isImage hash fileSize isDeleted gmMsgId gmMsgHex docType');
 define('DEFAULT_FIELDS_LINK', 'url resolvedURL sentDate sender recipients image title summary comparableURLHash isDeleted gmMsgId gmMsgHex');
-define('URL_EXPIRE_TIME_MINUTES', 1440); //24 hours
+define('IMAGE_EXPIRE_TIME_MINUTES', 1440); //24 hours
+define('FILE_EXPIRE_TIME_MINUTES', 5); //5 minutes
 define('SEARCH_THRESHOLD', .05);
 define('ABSOLUTE_MIN_SCORE', .01);
 define('DEFAULT_MAX_ITEMS', 50);

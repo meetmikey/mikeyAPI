@@ -6,6 +6,7 @@ var conf = require(serverCommon + '/conf')
   , mailUtils = require(serverCommon + '/lib/mailUtils')
   , AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
+  , mikeyAPIConstants = require ('../constants')
   , constants = require('../constants')
   , attachmentHelpers = require ('../lib/attachmentHelpers')
   , cloudStorageUtils = require (serverCommon + '/lib/cloudStorageUtils')
@@ -85,7 +86,7 @@ exports.goToAttachmentSignedURL = function(req, res) {
 
       } else {
         var path = cloudStorageUtils.getAttachmentPath(foundAttachment);
-        var signedURL = cloudStorageUtils.signedURL(path, routeAttachments.URL_EXPIRE_TIME_MINUTES, foundAttachment);
+        var signedURL = cloudStorageUtils.signedURL(path, mikeyAPIConstants.FILE_EXPIRE_TIME_MINUTES, foundAttachment);
         res.redirect(signedURL);
       }
     });

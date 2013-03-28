@@ -11,8 +11,6 @@ var conf = require(serverCommon + '/conf')
 
 var routeSearch = this;
 
-exports.URL_EXPIRE_TIME_MINUTES = 30;
-
 exports.getSearchResults = function(req, res) {
 
   // defaults
