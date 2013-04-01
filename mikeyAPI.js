@@ -9,7 +9,6 @@ var express             = require('express'),
     mikeyAPIConf        = require('./conf'),
     fs                  = require('fs'),
     https               = require('https'),
-    onboardUserHelpers  = require ('./lib/onboardUserHelpers'),
     routeLinks          = require('./routes/links'),
     routeSearch         = require('./routes/search'),
     routeUser           = require('./routes/user'),
@@ -75,33 +74,14 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
     };
   })
 
-  app.get('/auth/google',
-      passport.authenticate('google', { accessType: 'offline',
-                                        approvalPrompt: 'force',
-                                        scope: ['https://www.googleapis.com/auth/userinfo.profile',
-                                                'https://www.googleapis.com/auth/userinfo.email',
-                                                'https://mail.google.com/',
-                                                'https://www.googleapis.com/auth/drive.readonly'] }
-  ));
+  app.get('/auth/google', passport.callGoogleAuth);
 
   app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/oauth_failure'}), function(req, res) {
-    // TODO: check whether there's a new refresh token or whether this is a access token only auth
-    // if the latter, we need to return the asymm_hash of the refresh token from the db
-    // if the former, we need to generate two hashes of the refresh token and pass it along to the user
-
-    console.log ('user', req.user);
-
     res.render('callback.html', { message: JSON.stringify(req.user) } );
-
-    onboardUserHelpers.addGmailScrapingJob (req.user)
   });
 
   app.get('/oauth_failure', function(req, res) {
     res.render('oauth_failure.html');
-  });
-
-  app.post('/auth/refresh', passport.authenticate('refresh'), function(req, res) {
-    res.send(req.user);
   });
 
   app.get('/attachment',  passport.ensureAuthenticated, routeAttachments.getAttachments);

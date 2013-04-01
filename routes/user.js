@@ -1,6 +1,7 @@
 var serverCommon = process.env.SERVER_COMMON;
 
 var winston         = require(serverCommon + '/lib/winstonWrapper').winston,
+    constants       = require ('../constants'),
     mongoose        = require(serverCommon + '/lib/mongooseConnect').mongoose;
 
 var routeUser = this;
@@ -8,9 +9,20 @@ var UserModel = mongoose.model ('User')
 
 exports.getCurrentUser = function (req, res) {
   var userEmail = req.query.userEmail;
-  var refreshToken = req.query.refreshToken;
+  var asymHash = req.query.asymHash;
 
-  UserModel.findOne ({email : userEmail, refreshToken : refreshToken},
+  if (!req.query.asymHash) {
+    res.send ({"error" : "client needs upgrade"}, 400);
+    return;
+  }
+
+  var query = {
+    email : userEmail,
+    asymHash : asymHash
+  };
+
+  UserModel.findOne (query,
+    constants.DEFAULT_USER_FIELDS,
     function (err, foundUser) {
       if (err) {
         res.send ({"error" :  "internal error"}, 500);

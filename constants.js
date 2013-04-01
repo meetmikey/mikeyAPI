@@ -19,6 +19,7 @@ else{
 
 define('DEFAULT_FIELDS_ATTACHMENT', 'filename contentType sentDate sender recipients image isImage hash fileSize isDeleted gmMsgId gmMsgHex docType imageThumbExists attachmentThumbExists');
 define('DEFAULT_FIELDS_LINK', 'url resolvedURL sentDate sender recipients image title summary comparableURLHash isDeleted gmMsgId gmMsgHex imageThumbExists');
+define('DEFAULT_USER_FIELDS', 'googleID asymHash expiresAt displayName firstName lastName email gender locale hostedDomain picture gmailScrapeRequested timestamp');
 define('IMAGE_EXPIRE_TIME_MINUTES', 1440); //24 hours
 define('FILE_EXPIRE_TIME_MINUTES', 5); //5 minutes
 define('SEARCH_THRESHOLD', .05);
