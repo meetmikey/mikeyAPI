@@ -10,16 +10,25 @@ var UserModel = mongoose.model ('User')
 exports.getCurrentUser = function (req, res) {
   var userEmail = req.query.userEmail;
   var asymHash = req.query.asymHash;
+  var refreshToken = req.query.refreshToken;
 
+  /*
   if (!req.query.asymHash) {
     res.send ({"error" : "client needs upgrade"}, 400);
     return;
   }
+  */
 
   var query = {
-    email : userEmail,
-    asymHash : asymHash
+    email : userEmail
   };
+
+  if (asymHash) {
+    query.asymHash = asymHash;
+  }
+  else {
+    query.refreshToken = refreshToken;
+  }
 
   UserModel.findOne (query,
     constants.DEFAULT_USER_FIELDS,
