@@ -30,23 +30,6 @@ var initActions = [
 //If something fails, it will just exit the process.
 appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
-  /*
-  if (process.env.NODE_ENV == 'localhost' || process.env.NODE_ENV == 'development') {
-    var hd = new memwatch.HeapDiff();
-
-    memwatch.on('leak', function(info) {
-      winston.doError ('LEAK REPORT', {info : info});
-    });
-
-    memwatch.on('stats', function(stats) { 
-      winston.doInfo ('STATS REPORT', {stats : stats});
-      var diff = hd.end();
-
-      winston.doInfo ('HEAP DIFF', {diff :diff});
-      hd = new memwatch.HeapDiff();
-    });
-  }*/
-
   var app = module.exports = express();
 
   app.configure(function() {
@@ -102,7 +85,12 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
   ));
 
   app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/oauth_failure'}), function(req, res) {
-    console.log('authorized!', req.user);
+    // TODO: check whether there's a new refresh token or whether this is a access token only auth
+    // if the latter, we need to return the asymm_hash of the refresh token from the db
+    // if the former, we need to generate two hashes of the refresh token and pass it along to the user
+
+    console.log ('user', req.user);
+
     res.render('callback.html', { message: JSON.stringify(req.user) } );
 
     onboardUserHelpers.addGmailScrapingJob (req.user)
