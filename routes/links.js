@@ -38,7 +38,7 @@ exports.getLinks = function(req, res) {
     .select(constants.DEFAULT_FIELDS_LINK)
     .exec(function(err, foundLinks) {
       if ( err ) {
-        winston.doMongoError(err, res);
+        winston.doMongoError(err, null, res);
       } else {
         linkHelpers.addSignedURLs(foundLinks, userId)
         res.send( foundLinks );
@@ -57,7 +57,7 @@ exports.deleteLink = function (req, res) {
     {$set : {isDeleted : true}}, 
     function (err, num) {
       if (err) {
-        winston.doMongoError (err, res)
+        winston.doMongoError(err, null, res);
       }
       else {
         res.send (200)
@@ -81,7 +81,7 @@ exports.deleteLinkBulk = function (req, res) {
     {multi : true},
     function (err, num) {
       if (err) {
-        winston.doMongoError (err, res)
+        winston.doMongoError(err, null, res);
       }
       else {
         res.send (200)

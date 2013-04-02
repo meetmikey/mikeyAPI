@@ -12,7 +12,7 @@ exports.getOnboardingState = function (req, res) {
   UserOnboardingStateModel.findOne ({userId : userId}, '_id userId lastCompleted',
     function (err, foundState) {
       if (err) {
-        winston.doMongoError (err, res)
+        winston.doMongoError(err, null, res);
       }
       else if (foundState) {
         if (foundState.lastCompleted != 'markStoppingPoint') {
