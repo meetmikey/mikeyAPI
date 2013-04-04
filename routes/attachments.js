@@ -32,7 +32,7 @@ exports.deleteAttachment = function (req, res) {
     {$set : {isDeleted : true}}, 
     function (err, num) {
       if (err) {
-        winston.doMongoError (err, res)
+        winston.doMongoError(err, null, res);
       }
       else {
         console.log ('num affected', num)
@@ -57,7 +57,7 @@ exports.deleteAttachmentBulk = function (req, res) {
     {multi : true},
     function (err, num) {
       if (err) {
-        winston.doMongoError (err, res)
+        winston.doMongoError(err, null, res);
       }
       else {
         console.log ('num affected', num)
@@ -79,7 +79,7 @@ exports.goToAttachmentSignedURL = function(req, res) {
     //Make sure the attachment belongs to this user...
     AttachmentModel.findOne({_id:attachmentId, userId:userId}, function(err, foundAttachment) {
       if ( err ) {
-        winston.doMongoError(err, res);
+        winston.doMongoError(err, null, res);
 
       } else if ( ! foundAttachment ) {
         res.send(400, 'attachment not found');
