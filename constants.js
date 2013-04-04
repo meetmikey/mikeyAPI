@@ -28,4 +28,4 @@ define('DEFAULT_MAX_ITEMS', 50);
 define('DEFAULT_RESOURCE_LIMIT', 50);
 define('DEFAULT_IMAGE_RESOURCE_LIMIT', 25);
 define('IMAGE_DEDUPE_ADJUSTMENT_FACTOR', 1.4);  //non-scientific test showed ratio of 1.32.
-define('ACTIVE_CONNECTION_REQUEUE_CUTOFF', 60*1000*1) // 1 minute
+define('ACTIVE_CONNECTION_REQUEUE_CUTOFF', 60*1000*5) // 5 minutes
