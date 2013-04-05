@@ -13,6 +13,7 @@ var express             = require('express'),
     routeSearch         = require('./routes/search'),
     routeUser           = require('./routes/user'),
     routeAttachments    = require('./routes/attachments'),
+    routeDebug          = require('./routes/debug'),
     routeOnboarding     = require ('./routes/onboarding'),
     routeCounts         = require ('./routes/counts'),
     memwatch            = require('memwatch'),
@@ -107,6 +108,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
   app.get('/user', routeUser.getCurrentUser);
 
   app.get ('/counts', passport.ensureAuthenticated, routeCounts.getCounts);
+
+  app.post ('/debug', routeDebug.postClientBug);
 
   //Used by the load balancer to check whether this API is working.
   //mv views/index.html to stop traffic from the load balancer.
