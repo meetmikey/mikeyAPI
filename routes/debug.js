@@ -8,7 +8,7 @@ exports.postClientBug = function(req, res) {
   var info = req.body.info;
   var userEmail = req.body.userEmail;
 
-  winston.doWarn ('bug posted from client', {type : type, info : info, email : userEmail});
+  winston.doError ('Bug posted from client', {type : type, info : info, email : userEmail});
 
   res.send (200);
 }
