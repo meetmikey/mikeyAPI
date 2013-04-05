@@ -4,7 +4,7 @@ var winston = require(serverCommon + '/lib/winstonWrapper').winston;
 
 exports.postClientBug = function(req, res) {
 
-  var type = req.body.bugType;
+  var type = req.body.type;
   var data = req.body.data;
   var userEmail = req.body.userEmail;
 
