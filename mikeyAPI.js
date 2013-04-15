@@ -46,7 +46,7 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
   });
 
   var options = {};
-  app.configure('localhost', function(){
+  app.configure('local', function(){
     options = {
         key: fs.readFileSync( mikeyAPIConf.sslKeysLocal.keyFile )
       , cert: fs.readFileSync( mikeyAPIConf.sslKeysLocal.crtFile )
