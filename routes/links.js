@@ -23,7 +23,7 @@ exports.getLinks = function(req, res) {
     limit = 50
   }
 
-  var query = LinkModel.find({userId:userId, 'isPromoted':true})
+  var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true })
 
   if (before) {
     query.where ('sentDate').lt (before)
