@@ -14,7 +14,7 @@ else if(environment === 'development') {
   define('ENV', 'development');
 }
 else{
-  define('ENV', 'localhost');
+  define('ENV', 'local');
 }
 
 define('DEFAULT_FIELDS_ATTACHMENT', 'filename contentType sentDate sender recipients image isImage hash fileSize isDeleted gmMsgId gmMsgHex docType imageThumbExists attachmentThumbExists');
