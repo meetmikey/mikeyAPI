@@ -1,15 +1,16 @@
 var serverCommon = process.env.SERVER_COMMON;
 
-var winston         = require(serverCommon + '/lib/winstonWrapper').winston,
-    mongoose        = require(serverCommon + '/lib/mongooseConnect').mongoose
-    UserOnboardingStateModel = require (serverCommon  + '/schema/onboard').UserOnboardingStateModel;
+var winston = require(serverCommon + '/lib/winstonWrapper').winston,
+    constants = require ('../constants'),
+    UserOnboardingStateModel = require (serverCommon  + '/schema/onboard').UserOnboardingStateModel,
+    MailModel = require (serverCommon + '/schema/mail').MailModel;
 
 exports.getOnboardingState = function (req, res) {
   
   var userId = req.user._id;
-  var linkId = req.params.linkId;
 
-  UserOnboardingStateModel.findOne ({userId : userId}, '_id userId lastCompleted',
+  UserOnboardingStateModel.findOne ({userId : userId}, 
+    '_id userId lastCompleted',
     function (err, foundState) {
       if (err) {
         winston.doMongoError(err, null, res);
@@ -19,11 +20,30 @@ exports.getOnboardingState = function (req, res) {
           res.send ({'progress' : 0});
         }
         else {
-          res.send ({'progress' : 1});
+
+          // check whether 75% of mails with mmDone=true are also mailReaderState = done
+          MailModel.count ({userId : userId, mmDone : true}, function (err, mmDoneCount) {
+            if (err) {
+              winston.doMongoError (err, {'err' : 'mongo error'}, res);
+            } else {
+              MailModel.count ({userId: userId, mmDone : true, mailReaderState : 'done'}, function (err, readerDoneCount) {
+                if (err) {
+                  winston.doMongoError (err, {'err' : 'mongo error'}, res);
+                } else if (readerDoneCount/mmDoneCount > constants.DONE_THRESHOLD) {
+                  res.send ({'progress' : 1});
+                } else {
+                  winston.doInfo ('Progress of onboarding not high enough', {progress : readerDoneCount/mmDoneCount});
+                  res.send ({'progress' : 0});
+                }
+              });
+            }
+          });
         }
+
       }
       else {
         res.send ({'progress' : 0});
       }
     });
-}
+
+};

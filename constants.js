@@ -29,5 +29,6 @@ define('DEFAULT_RESOURCE_LIMIT', 50);
 define('DEFAULT_IMAGE_RESOURCE_LIMIT', 25);
 define('IMAGE_DEDUPE_ADJUSTMENT_FACTOR', 1.4);  //non-scientific test showed ratio of 1.32.
 define('ACTIVE_CONNECTION_REQUEUE_CUTOFF', 60*1000*10); // 5 minutes
+define('DONE_THRESHOLD', .75);
 
 define ('DOM_DIR', '/var/log/mikey/mikeyAPI/doms/');
