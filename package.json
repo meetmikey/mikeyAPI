@@ -3,15 +3,17 @@
   "version": "0.0.1-1",
   "private": true,
   "dependencies": {
-    "express": "~3.1.0",
-    "passport": "~0.1.15",
-    "passport-google-oauth": "~0.1.5",
-    "mongoose": "~3.5.5",
-    "async": ">=0.2.6",
-    "oauth": "~0.9.8",
-    "ejs": "~0.8.3",
-    "express-validator" : "0.3.1",
-    "memwatch" : ">=0.2.0",
-    "bcrypt" : ">=0.7.5"
+    "express": "=3.2.0",
+    "passport": "=0.1.16",
+    "passport-google-oauth": "=0.1.5",
+    "async": "=0.2.7",
+    "oauth": "=0.9.10",
+    "ejs": "=0.8.3",
+    "express-validator" : "=0.3.2",
+    "memwatch" : "=0.2.2",
+    "bcrypt" : "=0.7.5"
+  },
+  "engines": {
+    "node": "0.10.4"
   }
 }
