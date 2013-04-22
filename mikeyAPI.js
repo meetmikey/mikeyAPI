@@ -16,7 +16,6 @@ var express             = require('express'),
     routeDebug          = require('./routes/debug'),
     routeOnboarding     = require ('./routes/onboarding'),
     routeCounts         = require ('./routes/counts'),
-    memwatch            = require('memwatch'),
     routeImages         = require('./routes/images'),
     winston             = require (serverCommon + '/lib/winstonWrapper').winston,
     appInitUtils        = require(serverCommon + '/lib/appInitUtils');
@@ -24,6 +23,7 @@ var express             = require('express'),
 var initActions = [
     appInitUtils.CONNECT_ELASTIC_SEARCH
   , appInitUtils.CONNECT_MONGO
+  , appInitUtils.MEMWATCH_MONITOR
 ];
 
 //initApp() will not callback an error.
