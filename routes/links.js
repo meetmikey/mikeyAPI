@@ -23,13 +23,13 @@ exports.getLinks = function(req, res) {
     limit = 50
   }
 
-  var query = LinkModel.find({userId:userId, 'isPromoted':true})
+  var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true })
 
-  if (before) {
+  if ( before && ( before != Infinity ) && ( before != 'Infinity' ) ) {
     query.where ('sentDate').lt (before)
   }
 
-  if (after) {
+  if ( after && ( after != -Infinity ) && ( after != '-Infinity' ) ) {
     query.where ('sentDate').gt (after)
   }
       

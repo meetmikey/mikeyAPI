@@ -12,7 +12,7 @@ var routeCounts = this;
 exports.getCounts = function(req, res) {
 
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
-    winston.warn('routeLinks: getLinks: missing userId');
+    winston.warn('routeLinks: getCounts: missing userId');
     res.send(400, 'missing userId');
   }
 
@@ -22,7 +22,7 @@ exports.getCounts = function(req, res) {
   async.parallel ([
     function (callback) {    
       console.log ('here');
-      LinkModel.count({userId:userId, 'isPromoted':true}, function (err, count) {
+      LinkModel.count({userId:userId, 'isPromoted':true, 'isFollowed':true}, function (err, count) {
         if (err) { return callback (winston.makeMongoError (err)); }
         callback (null, count);
         console.log ('count', count);
