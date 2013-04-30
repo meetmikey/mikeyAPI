@@ -25,6 +25,7 @@ exports.getOnboardingState = function (req, res) {
             winston.doInfo ('24 hours since onboarding, pretty sure we\'re done');
             res.send ({'progress' : 1});
           } else {
+
             // check whether 75% of mails with mmDone=true are also mailReaderState = done
             MailModel.count ({userId : userId, mmDone : true}, function (err, mmDoneCount) {
               if (err) {
