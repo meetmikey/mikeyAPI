@@ -12,7 +12,7 @@ var routeCounts = this;
 exports.getCounts = function(req, res) {
 
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
-    winston.warn('routeLinks: getLinks: missing userId');
+    winston.warn('routeLinks: getCounts: missing userId');
     res.send(400, 'missing userId');
   }
 
