@@ -22,7 +22,7 @@ define('DEFAULT_FIELDS_LINK', 'url resolvedURL sentDate sender recipients image 
 define('DEFAULT_USER_FIELDS', 'googleID asymHash expiresAt displayName firstName lastName email gender locale hostedDomain picture gmailScrapeRequested timestamp');
 define('IMAGE_EXPIRE_TIME_MINUTES', 1440); //24 hours
 define('FILE_EXPIRE_TIME_MINUTES', 5); //5 minutes
-define('SEARCH_THRESHOLD', .05);
+define('SEARCH_THRESHOLD', 0);
 define('ABSOLUTE_MIN_SCORE', .01);
 define('DEFAULT_MAX_ITEMS', 50);
 define('DEFAULT_RESOURCE_LIMIT', 50);
