@@ -23,6 +23,7 @@ var express             = require('express'),
 var initActions = [
     appInitUtils.CONNECT_ELASTIC_SEARCH
   , appInitUtils.CONNECT_MONGO
+  , appInitUtils.CONNECT_MEMCACHED
   //, appInitUtils.MEMWATCH_MONITOR
 ];
 
