@@ -17,8 +17,6 @@ else{
   define('ENV', 'local');
 }
 
-define('DEFAULT_FIELDS_ATTACHMENT', 'userId filename contentType sentDate sender recipients image isImage hash fileSize isDeleted gmMsgId gmMsgHex docType attachmentThumbExists');
-define('DEFAULT_FIELDS_LINK', 'userId url resolvedURL sentDate sender recipients image title summary comparableURLHash isDeleted gmMsgId gmMsgHex imageThumbExists');
 define('DEFAULT_USER_FIELDS', 'googleID asymHash expiresAt displayName firstName lastName email gender locale hostedDomain picture gmailScrapeRequested timestamp');
 define('IMAGE_EXPIRE_TIME_MINUTES', 1440); //24 hours
 define('FILE_EXPIRE_TIME_MINUTES', 5); //5 minutes
