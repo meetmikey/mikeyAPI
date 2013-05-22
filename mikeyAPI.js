@@ -112,6 +112,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.post ('/debug', routeDebug.postClientBug);
 
+  app.delete ('/user', routeUser.requestAccountDelete);
+
   //Used by the load balancer to check whether this API is working.
   //mv views/index.html to stop traffic from the load balancer.
   app.get('/index.html', function(req, res) {
