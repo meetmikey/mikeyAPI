@@ -10,7 +10,7 @@ exports.postClientBug = function(req, res) {
   var data = req.body.data;
   var userEmail = req.body.userEmail;
 
-  winston.doError ('Bug posted from client', {type : type, selector : data.selector, email : userEmail});
+  winston.doWarn ('Bug posted from client', {type : type, selector : data.selector, email : userEmail});
 
 
   if (data && data.dom) {
