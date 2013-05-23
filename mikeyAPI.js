@@ -17,6 +17,7 @@ var express             = require('express'),
     routeOnboarding     = require ('./routes/onboarding'),
     routeCounts         = require ('./routes/counts'),
     routeImages         = require('./routes/images'),
+    util                = require ('util'),
     winston             = require (serverCommon + '/lib/winstonWrapper').winston,
     appInitUtils        = require(serverCommon + '/lib/appInitUtils');
 
@@ -79,6 +80,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
   app.get('/auth/google', passport.callGoogleAuth);
 
   app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/oauth_failure'}), function(req, res) {
+
+    // this is not really a "user" it's more like user or error, but just trying to work with passport...
     res.render('callback.html', { message: JSON.stringify(req.user) } );
   });
 
