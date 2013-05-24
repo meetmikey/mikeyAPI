@@ -79,6 +79,7 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
   app.get('/auth/google', passport.callGoogleAuth);
 
   app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/oauth_failure'}), function(req, res) {
+    // TODO: this is not really a "user" it's more like user or error, but just trying to work with passport...
     res.render('callback.html', { message: JSON.stringify(req.user) } );
   });
 
