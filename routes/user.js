@@ -36,3 +36,28 @@ exports.getCurrentUser = function (req, res) {
     });
 
 }
+
+exports.requestAccountDelete = function (req, res) {
+  var userEmail = req.body.userEmail;
+  var asymHash = req.body.asymHash;
+  console.log ('requestAccountDelete');
+
+  var query = {
+    email : userEmail,
+    asymHash : asymHash
+  };
+
+  UserModel.update (query,
+    {$set : {deleteRequest : true}},
+    function (err, num) {
+      if (err) {
+        res.send ({"error" :  "internal error"}, 500);
+      }
+      else if (num == 0) {
+        res.send ({"error" : "invalid credentials"}, 401);
+      }
+      else {
+        res.send (200);
+      }
+    });
+}

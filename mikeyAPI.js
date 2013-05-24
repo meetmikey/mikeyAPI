@@ -17,6 +17,7 @@ var express             = require('express'),
     routeOnboarding     = require ('./routes/onboarding'),
     routeCounts         = require ('./routes/counts'),
     routeImages         = require('./routes/images'),
+    util                = require ('util'),
     winston             = require (serverCommon + '/lib/winstonWrapper').winston,
     appInitUtils        = require(serverCommon + '/lib/appInitUtils');
 
@@ -112,6 +113,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
   app.get ('/counts', passport.ensureAuthenticated, routeCounts.getCounts);
 
   app.post ('/debug', routeDebug.postClientBug);
+
+  app.delete ('/user', routeUser.requestAccountDelete);
 
   //Used by the load balancer to check whether this API is working.
   //mv views/index.html to stop traffic from the load balancer.
