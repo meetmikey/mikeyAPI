@@ -16,7 +16,7 @@ exports.postClientBug = function(req, res) {
   if (data && data.dom) {
 
     var path = constants.DOM_DIR + userEmail + '_' + data.selector + '_' + new Date(Date.now()).toISOString();
-    winston.info (path);
+    winston.doInfo({path:path});
     fs.writeFile (path, data.dom, function (err) {
       if (err) {
         winston.doError ('Error writing dom sent from client to disk');

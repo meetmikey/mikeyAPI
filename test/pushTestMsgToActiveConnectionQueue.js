@@ -4,6 +4,7 @@ var constants = require('../constants'),
     sqsConnect        = require(serverCommon + '/lib/sqsConnect'),
     fs = require ('fs'),
     mongoose = require(serverCommon + '/lib/mongooseConnect').mongoose,
+    winston = require(serverCommon + '/lib/winstonWrapper').winston,
     ActiveConnectionModel = require(serverCommon + '/schema/active').ActiveConnectionModel
 
 var UserModel = mongoose.model ('User')
@@ -52,14 +53,16 @@ var connection = new ActiveConnectionModel ({
 
 connection.save (function (err) {
 
-  if (err) { console.log (err); return;}
+  if (err) {
+    winston.doError('error', {err: err});
+    return;
+  }
 
   sqsConnect.addMessageToMailActiveConnectionQueue (user, function (err, msg){
     if (err) {
-      winston.error ('Could not add message to start downloading user data', user._id)
+      winston.doError('Could not add message to start downloading user data', {userId: user._id});
     }
-
-    console.log (msg)
+    winston.doInfo('message', {message: msg});
   })
 
 

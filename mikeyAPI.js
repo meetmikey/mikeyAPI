@@ -122,9 +122,9 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
     res.render('index.html');
   });
 
-
-  https.createServer(options, app).listen(8080, function() {
-    console.log('mikey api running on port 8080');
+  var listenPort = constants.LISTEN_PORT;
+  https.createServer(options, app).listen(listenPort, function() {
+    winston.doInfo('mikey api running', {listenPort: listenPort}, true);
   });
 
 

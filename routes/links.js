@@ -11,7 +11,7 @@ var routeLinks = this;
 exports.getLinks = function(req, res) {
 
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
-    winston.warn('routeLinks: getLinks: missing userId');
+    winston.doWarn('routeLinks: getLinks: missing userId');
     res.send(400, 'missing userId');
   }
 

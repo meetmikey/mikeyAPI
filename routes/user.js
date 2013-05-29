@@ -40,7 +40,6 @@ exports.getCurrentUser = function (req, res) {
 exports.requestAccountDelete = function (req, res) {
   var userEmail = req.body.userEmail;
   var asymHash = req.body.asymHash;
-  console.log ('requestAccountDelete');
 
   var query = {
     email : userEmail,

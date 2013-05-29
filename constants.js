@@ -17,6 +17,8 @@ else{
   define('ENV', 'local');
 }
 
+define('LISTEN_PORT', 8080);
+
 define('DEFAULT_USER_FIELDS', 'googleID asymHash expiresAt displayName firstName lastName email gender locale hostedDomain picture gmailScrapeRequested timestamp invalidToken');
 define('IMAGE_EXPIRE_TIME_MINUTES', 1440); //24 hours
 define('FILE_EXPIRE_TIME_MINUTES', 5); //5 minutes

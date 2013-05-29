@@ -22,18 +22,16 @@ appInitUtils.initApp( 'testTimeComparison', initActions, null, function() {
       }
       else if (foundState) {
         if (foundState.lastCompleted != 'markStoppingPoint') {
-          console.log ({'progress' : 0});
+          winston.doInfo('progress 0');
         }
         else {
-
-          console.log (foundState.mikeyMailTS)
-          console.log (new Date(Date.now () - 60*1000*60*12))
-
+          var dateCalc = new Date(Date.now () - 60*1000*60*12;
+          winston.doInfo('here', {mikeyMailTS: foundState.mikeyMailTS, dateCalc: dateCalc});
 
           // check if it's been > 24 hours since onboarding complete
-          if (foundState.mikeyMailTS < new Date(Date.now () - 60*1000*60*12)) {
+          if (foundState.mikeyMailTS < dateCalc)) {
             winston.doInfo ('12 hours since onboarding, pretty sure we\'re done');
-            console.log ({'progress' : 1});
+            winston.doInfo('progress 1');
           }
         }
       }

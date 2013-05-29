@@ -35,7 +35,6 @@ exports.deleteAttachment = function (req, res) {
         winston.doMongoError(err, null, res);
       }
       else {
-        console.log ('num affected', num)
         res.send (200)
       }
     });
@@ -60,7 +59,6 @@ exports.deleteAttachmentBulk = function (req, res) {
         winston.doMongoError(err, null, res);
       }
       else {
-        console.log ('num affected', num)
         res.send ('deleted attachment', 200)
       }
     });
@@ -68,7 +66,7 @@ exports.deleteAttachmentBulk = function (req, res) {
 
 exports.goToAttachmentSignedURL = function(req, res) {
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
-    winston.warn('routeAttachments: getAttachments: missing userId');
+    winston.doWarn('routeAttachments: getAttachments: missing userId');
     res.send(400, 'missing userId');
   } else if ( ( ! req ) || ( ! req.params ) || ( ! req.params.attachmentId ) ) {
     res.send(400, 'missing attachmentId');
