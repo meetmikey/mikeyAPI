@@ -32,3 +32,4 @@ define('ACTIVE_CONNECTION_REQUEUE_CUTOFF', 60*1000*5); // 5 minutes
 define('DONE_THRESHOLD', .75);
 
 define ('DOM_DIR', '/var/log/mikey/mikeyAPI/doms/');
+define('REFERRAL_COOKIE_MAX_AGE',   30 * 24 * 60 * 60 * 1000); // 30 days

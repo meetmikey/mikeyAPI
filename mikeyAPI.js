@@ -81,6 +81,7 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/oauth_failure'}), function(req, res) {
     // TODO: this is not really a "user" it's more like user or error, but just trying to work with passport...
+    routeOnboarding.checkForReferral( req );
     res.render('callback.html', { message: JSON.stringify(req.user) } );
   });
 
@@ -115,6 +116,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
   app.post ('/debug', routeDebug.postClientBug);
 
   app.delete ('/user', routeUser.requestAccountDelete);
+
+  app.get('/install', routeOnboarding.installRedirect);
 
   //Used by the load balancer to check whether this API is working.
   //mv views/index.html to stop traffic from the load balancer.
