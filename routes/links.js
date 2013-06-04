@@ -33,7 +33,7 @@ exports.getLinks = function(req, res) {
   if ( after && ( after != -Infinity ) && ( after != '-Infinity' ) ) {
     query.where ('sentDate').gt (after)
   }
-      
+  
   query.sort ('-sentDate')
     .limit (limit)
     .select(scConstants.DEFAULT_FIELDS_LINK)
