@@ -13,12 +13,30 @@ var routeSearch = this;
 
 exports.getSearchResults = function(req, res) {
 
+  if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
+    winston.doWarn('routeLinks: getLinks: missing userId');
+    res.send(400, 'missing userId');
+  }
+
+  var user = req.user;
+  var userId = user._id;
+  var daysLimit = null;
+  if ( ! user.isPremium ) {
+    if ( ! user.daysLimit ) {
+      winston.doError('user is not premium, but has not daysLimit', {userId: userId});
+    } else {
+      daysLimit = user.daysLimit;
+    }
+  }
+
+
   // defaults
   var searchOptions = {
-    query : req.query.query,
-    from : 0,
-    size : 80,
-    userId : req.user._id
+      query: req.query.query
+    , from: 0
+    , size: 80
+    , userId: userId
+    , daysLimit: daysLimit
   }
 
   routeSearch.validateSearchQuery (req, searchOptions, function (errors) {
@@ -32,7 +50,7 @@ exports.getSearchResults = function(req, res) {
   })
 
   function doSearch() {
-    searchHelpers.doSearch (searchOptions.query, searchOptions.userId, searchOptions.from, searchOptions.size, 
+    searchHelpers.doSearch (searchOptions.query, searchOptions.userId, searchOptions.from, searchOptions.size, searchOptions.daysLimit,
       function (err, result) {
       if (err) {
         res.send ({'error' : err}, 500)

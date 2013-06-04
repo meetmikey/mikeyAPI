@@ -2,8 +2,7 @@ var serverCommon = process.env.SERVER_COMMON;
 
 var LinkModel = require(serverCommon + '/schema/link').LinkModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
-  , constants = require('../constants')
-  , scConstants = require (serverCommon + '/constants')
+  , constants = require(serverCommon + '/constants')
   , linkHelpers = require('../lib/linkHelpers')
 
 var routeLinks = this;
@@ -14,8 +13,8 @@ exports.getLinks = function(req, res) {
     winston.doWarn('routeLinks: getLinks: missing userId');
     res.send(400, 'missing userId');
   }
-
-  var userId = req.user._id;
+  var user = req.user;
+  var userId = user._id;
   var before = req.query.before;
   var after = req.query.after;
   var limit = req.query.limit;
@@ -33,10 +32,22 @@ exports.getLinks = function(req, res) {
   if ( after && ( after != -Infinity ) && ( after != '-Infinity' ) ) {
     query.where ('sentDate').gt (after)
   }
-  
+
+  if ( ! user.isPremium ) {
+    var daysLimit = user.daysLimit;
+    if ( ! daysLimit ) {
+      winston.doError('user is not premium, but has no daysLimit', {userId: userId});
+
+    } else {
+      var currentTime = Date.now();
+      var cutoffDate = new Date(currentTime - daysLimit*constants.ONE_DAY_IN_MS);
+      query.where('sentDate').gt(cutoffDate);
+    }
+  }
+      
   query.sort ('-sentDate')
     .limit (limit)
-    .select(scConstants.DEFAULT_FIELDS_LINK)
+    .select(constants.DEFAULT_FIELDS_LINK)
     .exec(function(err, foundLinks) {
       if ( err ) {
         winston.doMongoError(err, null, res);
