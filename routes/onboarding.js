@@ -32,28 +32,8 @@ exports.getOnboardingState = function (req, res) {
           } else {
 
 
-            /*
-            // check whether 75% of mails with mmDone=true are also mailReaderState = done
-            MailModel.count ({userId : userId, mmDone : true}, function (err, mmDoneCount) {
-              if (err) {
-                winston.doMongoError (err, {'err' : 'mongo error'}, res);
-              } else {
-                MailModel.count ({userId: userId, mmDone : true, mailReaderState : 'done'}, function (err, readerDoneCount) {
-                  if (err) {
-                    winston.doMongoError (err, {'err' : 'mongo error'}, res);
-                  } else if (readerDoneCount/mmDoneCount > mikeyAPIConstants.DONE_THRESHOLD) {
-                    res.send ({'progress' : 1});
-                  } else {
-                    winston.doInfo ('Progress of onboarding not high enough', {progress : readerDoneCount/mmDoneCount});
-                    res.send ({'progress' : 0});
-                  }
-                });
-              }
-            }); */
             var ratio = 1-(req.user.minMRProcessedDate.getTime() - req.user.minProcessedDate.getTime())/(req.user.daysLimit*constants.ONE_DAY_IN_MS)
 
-
-            // TODO: test this
             if (ratio > .75) {
               res.send ({progress : 1});
             } else {
