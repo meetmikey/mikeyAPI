@@ -103,11 +103,7 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.delete('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.deleteAttachment);
 
-  app.delete('/attachment', passport.ensureAuthenticated, routeAttachments.deleteAttachmentBulk);
-
   app.delete('/link/:linkId', passport.ensureAuthenticated, routeLinks.deleteLink);
-
-  app.delete('/link', passport.ensureAuthenticated, routeLinks.deleteLinkBulk);
 
   app.get('/user', routeUser.getCurrentUser);
 
