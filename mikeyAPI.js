@@ -81,7 +81,10 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/oauth_failure'}), function(req, res) {
     // TODO: this is not really a "user" it's more like user or error, but just trying to work with passport...
-    routeOnboarding.checkForReferral( req );
+    if (req.user && !req.user.error) {
+      routeOnboarding.checkForReferral( req );
+    }
+
     res.render('callback.html', { message: JSON.stringify(req.user) } );
   });
 
@@ -103,11 +106,7 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.delete('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.deleteAttachment);
 
-  app.delete('/attachment', passport.ensureAuthenticated, routeAttachments.deleteAttachmentBulk);
-
   app.delete('/link/:linkId', passport.ensureAuthenticated, routeLinks.deleteLink);
-
-  app.delete('/link', passport.ensureAuthenticated, routeLinks.deleteLinkBulk);
 
   app.get('/user', routeUser.getCurrentUser);
 

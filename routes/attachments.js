@@ -1,15 +1,11 @@
 var serverCommon = process.env.SERVER_COMMON;
 
-var conf = require(serverCommon + '/conf')
-  , async = require('async')
-  , utils = require(serverCommon + '/lib/utils')
-  , mailUtils = require(serverCommon + '/lib/mailUtils')
-  , AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentModel
+var AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
   , mikeyAPIConstants = require ('../constants')
-  , constants = require('../constants')
   , attachmentHelpers = require ('../lib/attachmentHelpers')
   , cloudStorageUtils = require (serverCommon + '/lib/cloudStorageUtils')
+  , indexingHandler = require (serverCommon + '/lib/indexingHandler')
   , activeConnectionHelpers = require ('../lib/activeConnectionHelpers');
 
 var routeAttachments = this;
@@ -20,7 +16,6 @@ exports.getAttachments = function(req, res) {
 
   // update last access time
   activeConnectionHelpers.updateLastAccessTime (req.user);
-  
 }
 
 exports.deleteAttachment = function (req, res) {
@@ -28,41 +23,38 @@ exports.deleteAttachment = function (req, res) {
   var userId = req.user._id;
   var attachmentId = req.params.attachmentId;
 
-  AttachmentModel.update ({userId : userId, _id : attachmentId}, 
-    {$set : {isDeleted : true}}, 
-    function (err, num) {
+  AttachmentModel.findOne ({_id : attachmentId},
+    function (err, foundAtt) {
       if (err) {
         winston.doMongoError(err, null, res);
+      } else if (!foundAtt) {
+        res.send ({'error' : 'bad attachmentId'}, 400);
+      } else {
+        if (String (foundAtt.userId) != userId) {
+          res.send ({'error' : 'not authorized'}, 403);
+        } else {
+          foundAtt.isDeleted = true;
+
+          foundAtt.save (function (err) {
+            if (err) {
+              winston.doMongoError (err, null, res);
+            } else {
+              // create delete from index job
+              indexingHandler.createDeleteJobForDocument(userId, attachmentId, 'Attachment', function (err) {
+                if (err) {
+                  winston.doMongoError(err, null, res);
+                } else {
+                  res.send (200);
+                }
+              });
+            }
+          });
+        }
       }
-      else {
-        res.send (200)
-      }
-    });
+    })
 
 }
 
-exports.deleteAttachmentBulk = function (req, res) {
-
-  var userId = req.user._id;
-  var attachmentIds = req.body.attachmentIds;
-
-  if (!attachmentIds) {
-    res.send ('bad request: must specify attachmentIds', 400);
-    return;
-  }
-
-  AttachmentModel.update ({userId : userId, _id : {$in : attachmentIds}}, 
-    {$set : {isDeleted : true}},
-    {multi : true},
-    function (err, num) {
-      if (err) {
-        winston.doMongoError(err, null, res);
-      }
-      else {
-        res.send ('deleted attachment', 200)
-      }
-    });
-}
 
 exports.goToAttachmentSignedURL = function(req, res) {
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {

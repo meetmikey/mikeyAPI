@@ -3,6 +3,7 @@ var serverCommon = process.env.SERVER_COMMON;
 var LinkModel = require(serverCommon + '/schema/link').LinkModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
   , constants = require(serverCommon + '/constants')
+  , indexingHandler = require (serverCommon + '/lib/indexingHandler')
   , linkHelpers = require('../lib/linkHelpers')
 
 var routeLinks = this;
@@ -23,7 +24,7 @@ exports.getLinks = function(req, res) {
     limit = 50
   }
 
-  var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true })
+  var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true, 'isDeleted' : false })
 
   if ( before && ( before != Infinity ) && ( before != 'Infinity' ) ) {
     query.where ('sentDate').lt (before)
@@ -65,38 +66,34 @@ exports.deleteLink = function (req, res) {
   var userId = req.user._id;
   var linkId = req.params.linkId;
 
-  LinkModel.update ({userId : userId, _id : linkId}, 
-    {$set : {isDeleted : true}}, 
-    function (err, num) {
+  LinkModel.findOne ({_id : linkId},
+    function (err, foundLink) {
       if (err) {
         winston.doMongoError(err, null, res);
+      } else if (!foundLink) {
+        res.send ({'error' : 'bad linkId'}, 400);
+      } else {
+        if (String (foundLink.userId) != userId) {
+          res.send ({'error' : 'not authorized'}, 403);
+        } else {
+          foundLink.isDeleted = true;
+
+          foundLink.save (function (err) {
+            if (err) {
+              winston.doMongoError (err, null, res);
+            } else {
+              // create delete from index job
+              indexingHandler.createDeleteJobForDocument(userId, linkId, 'Link', function (err) {
+                if (err) {
+                  winston.doMongoError(err, null, res);
+                } else {
+                  res.send (200);
+                }
+              });
+            }
+          });
+        }
       }
-      else {
-        res.send (200)
-      }
-    });
+    })
 
-}
-
-exports.deleteLinkBulk = function (req, res) {
-
-  var userId = req.user._id;
-  var linkIds = req.body.linkIds;
-
-  if (!linkIds) {
-    res.send ('bad request: must specify linkIds', 400);
-    return;
-  }
-
-  LinkModel.update ({userId : userId, _id : {$in : linkIds}}, 
-    {$set : {isDeleted : true}},
-    {multi : true},
-    function (err, num) {
-      if (err) {
-        winston.doMongoError(err, null, res);
-      }
-      else {
-        res.send (200)
-      }
-    });
 }

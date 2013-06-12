@@ -3,6 +3,7 @@ var serverCommon = process.env.SERVER_COMMON;
 var winston = require(serverCommon + '/lib/winstonWrapper').winston
   , referralUtils = require(serverCommon + '/lib/referralUtils')
   , mikeyAPIConstants = require ('../constants')
+  , constants = require (serverCommon + '/constants')
   , UserOnboardingStateModel = require (serverCommon  + '/schema/onboard').UserOnboardingStateModel
   , MailModel = require (serverCommon + '/schema/mail').MailModel
   , mikeyAPIConf = require('../conf')
@@ -24,29 +25,22 @@ exports.getOnboardingState = function (req, res) {
           res.send ({'progress' : 0});
         }
         else {
-          // check if it's been > 24 hours since onboarding complete
-          if (foundState.mikeyMailTS < new Date(Date.now () - 60*1000*60*24)) {
-            winston.doInfo ('24 hours since onboarding, pretty sure we\'re done');
+          // check if it's been > 12 hours since onboarding complete
+          if (foundState.mikeyMailTS < new Date(Date.now () - 60*1000*60*12)) {
+            winston.doInfo ('12 hours since onboarding, pretty sure we\'re done', {userId: userId});
             res.send ({'progress' : 1});
           } else {
 
-            // check whether 75% of mails with mmDone=true are also mailReaderState = done
-            MailModel.count ({userId : userId, mmDone : true}, function (err, mmDoneCount) {
-              if (err) {
-                winston.doMongoError (err, {'err' : 'mongo error'}, res);
-              } else {
-                MailModel.count ({userId: userId, mmDone : true, mailReaderState : 'done'}, function (err, readerDoneCount) {
-                  if (err) {
-                    winston.doMongoError (err, {'err' : 'mongo error'}, res);
-                  } else if (readerDoneCount/mmDoneCount > mikeyAPIConstants.DONE_THRESHOLD) {
-                    res.send ({'progress' : 1});
-                  } else {
-                    winston.doInfo ('Progress of onboarding not high enough', {progress : readerDoneCount/mmDoneCount});
-                    res.send ({'progress' : 0});
-                  }
-                });
-              }
-            });
+
+            var ratio = 1-(req.user.minMRProcessedDate.getTime() - req.user.minProcessedDate.getTime())/(req.user.daysLimit*constants.ONE_DAY_IN_MS)
+
+            if (ratio > .75) {
+              res.send ({progress : 1});
+            } else {
+              winston.doInfo ('Progress of onboarding not high enough', {progress : ratio});
+              res.send ({'progress' : 0});
+            }
+
           }
         }
       }
