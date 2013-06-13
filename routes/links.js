@@ -95,5 +95,43 @@ exports.deleteLink = function (req, res) {
         }
       }
     })
+}
+
+/*
+exports.unDeleteLink = function (req, res) {
+
+  var userId = req.user._id;
+  var linkId = req.params.linkId;
+
+  LinkModel.findOne ({_id : linkId},
+    function (err, foundLink) {
+      if (err) {
+        winston.doMongoError(err, null, res);
+      } else if (!foundLink) {
+        res.send ({'error' : 'bad linkId'}, 400);
+      } else {
+        if (String (foundLink.userId) != userId) {
+          res.send ({'error' : 'not authorized'}, 403);
+        } else {
+          foundLink.isDeleted = false;
+
+          foundLink.save (function (err) {
+            if (err) {
+              winston.doMongoError (err, null, res);
+            } else {
+              // create indexing job
+              indexingHandler.createIndexingJobForDocument(foundLink, true, false, function (err) {
+                if (err) {
+                  winston.doMongoError(err, null, res);
+                } else {
+                  res.send (200);
+                }
+              });
+            }
+          });
+        }
+      }
+    })
 
 }
+*/

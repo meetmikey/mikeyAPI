@@ -51,10 +51,47 @@ exports.deleteAttachment = function (req, res) {
           });
         }
       }
+    });
+}
+
+/*
+exports.unDeleteAttachment = function (req, res) {
+
+  var userId = req.user._id;
+  var attachmentId = req.params.attachmentId;
+
+  AttachmentModel.findOne ({_id : attachmentId},
+    function (err, foundAtt) {
+      if (err) {
+        winston.doMongoError(err, null, res);
+      } else if (!foundAtt) {
+        res.send ({'error' : 'bad attachmentId'}, 400);
+      } else {
+        if (String (foundAtt.userId) != userId) {
+          res.send ({'error' : 'not authorized'}, 403);
+        } else {
+          foundAtt.isDeleted = false;
+
+          foundAtt.save (function (err) {
+            if (err) {
+              winston.doMongoError (err, null, res);
+            } else {
+              // create indexing job
+              indexingHandler.createIndexingJobForDocument (foundAtt, false, false, function (err) {
+                if (err) {
+                  winston.doMongoError(err, null, res);
+                } else {
+                  res.send (200);
+                }
+              });
+            }
+          });
+        }
+      }
     })
 
 }
-
+*/
 
 exports.goToAttachmentSignedURL = function(req, res) {
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
