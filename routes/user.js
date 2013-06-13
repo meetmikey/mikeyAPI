@@ -2,6 +2,7 @@ var serverCommon = process.env.SERVER_COMMON;
 
 var winston         = require(serverCommon + '/lib/winstonWrapper').winston,
     constants       = require ('../constants'),
+    sesUtils        = require (serverCommon + '/lib/sesUtils'),
     mongoose        = require(serverCommon + '/lib/mongooseConnect').mongoose;
 
 var routeUser = this;
@@ -52,11 +53,18 @@ exports.requestAccountDelete = function (req, res) {
       if (err) {
         res.send ({"error" :  "internal error"}, 500);
       }
-      else if (num == 0) {
+      else if (num === 0) {
         res.send ({"error" : "invalid credentials"}, 401);
       }
       else {
-        res.send (200);
+        // send internal notification to delete account
+        sesUtils.sendInternalNotificationEmail ('Account delete requested by user ' + userEmail, 'Account Delete Requested', function (err) {
+          if (err) {
+            winston.doMongoError(err, null, res);
+          } else {
+            res.send (200);
+          }
+        });
       }
     });
 }
