@@ -1,8 +1,9 @@
 var serverCommon = process.env.SERVER_COMMON;
 
-var winston         = require(serverCommon + '/lib/winstonWrapper').winston,
-    constants       = require ('../constants'),
-    mongoose        = require(serverCommon + '/lib/mongooseConnect').mongoose;
+var winston = require(serverCommon + '/lib/winstonWrapper').winston
+  , constants = require ('../constants')
+  , mongoose = require(serverCommon + '/lib/mongooseConnect').mongoose
+  , sesUtils = require(serverCommon + '/lib/sesUtils')
 
 var routeUser = this;
 var UserModel = mongoose.model ('User')
@@ -59,4 +60,23 @@ exports.requestAccountDelete = function (req, res) {
         res.send (200);
       }
     });
+}
+
+exports.upgradeInterest = function (req, res) {
+  var userEmail = req.query.userEmail;
+
+  var text = '';
+  if ( userEmail ) {
+    text += userEmail;
+  } else {
+    text += 'an unknown user';
+  }
+  text += ' clicked upgrade';
+  var subject = 'user clicked upgrade';
+
+  sesUtils.sendInternalNotificationEmail(text, subject, function(err) {
+    if ( err ) {
+      winston.handleError(err);
+    }
+  });
 }
