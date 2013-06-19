@@ -122,7 +122,7 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.delete ('/user', routeUser.requestAccountDelete);
 
-  app.get('/install', routeOnboarding.installRedirect);
+  app.get('/i/:rId', routeOnboarding.installRedirect);
 
   //Used by the load balancer to check whether this API is working.
   //mv views/index.html to stop traffic from the load balancer.
