@@ -54,7 +54,8 @@ exports.getOnboardingState = function (req, res) {
 exports.installRedirect = function( req, res ) {
 
   var referralId = req.params.rId;
-  var source = req.query.s;
+  var source = req.params.source;
+
   var originURL = req.header('Referer');
   winston.doInfo('installRedirect', {referralId: referralId, source: source, originURL: originURL, reqHeaders: req.headers});
 
