@@ -86,4 +86,5 @@ exports.upgradeInterest = function (req, res) {
       winston.handleError(err);
     }
   });
+  res.send(200);
 }
