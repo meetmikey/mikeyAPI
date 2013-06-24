@@ -128,6 +128,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.get('/:rId/:source', routeOnboarding.moveDomain, routeOnboarding.installRedirect);
 
+  app.get('/testReferral', routeOnboarding.testReferral);
+
   //Used by the load balancer to check whether this API is working.
   //mv views/index.html to stop traffic from the load balancer.
   app.get('/index.html', function(req, res) {

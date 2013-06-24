@@ -54,12 +54,13 @@ exports.getOnboardingState = function (req, res) {
 };
 
 exports.moveDomain = function ( req, res, next ) {
+
   if (req.headers.host !== conf.domain) {
     winston.doInfo ('redirect');
     res.redirect ('https://' + conf.domain + '/' + req.params.rId + '/' + req.params.source);
   } else {
     winston.doInfo ('no redirect');
-    next(req, res);
+    next();
   }
 }
 
@@ -131,4 +132,12 @@ exports.checkForReferral = function( req, res ) {
   if ( res ) {
     res.send(200);
   }
+}
+
+exports.testReferral = function(req, res) {
+  var referralId = req.signedCookies['referralId'];
+  var source = req.signedCookies['source'];
+  var message = 'testReferral, referralId: ' + referralId + ', source: ' + source;
+  console.log( message );
+  res.send(200, message);
 }
