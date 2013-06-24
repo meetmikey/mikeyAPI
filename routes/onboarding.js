@@ -56,7 +56,7 @@ exports.getOnboardingState = function (req, res) {
 exports.moveDomain = function ( req, res, next ) {
   if (req.headers.host !== conf.domain) {
     winston.doInfo ('redirect');
-    res.redirect ('https://' + conf.domain + req.route.path);
+    res.redirect ('https://' + conf.domain + '/' + req.params.rId + '/' + req.params.source);
   } else {
     winston.doInfo ('no redirect');
     next()
