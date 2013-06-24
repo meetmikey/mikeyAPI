@@ -59,7 +59,7 @@ exports.moveDomain = function ( req, res, next ) {
     res.redirect ('https://' + conf.domain + '/' + req.params.rId + '/' + req.params.source);
   } else {
     winston.doInfo ('no redirect');
-    next()
+    next(req, res);
   }
 }
 
