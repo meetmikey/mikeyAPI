@@ -77,6 +77,10 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
     };
   })
 
+  app.get ('/', function (req, res) {
+    res.redirect( mikeyAPIConf.installURL );
+  });
+
   app.get('/auth/google', passport.callGoogleAuth);
 
   app.get('/oauth2callback', passport.authenticate('google', {failureRedirect: '/oauth_failure'}), function(req, res) {
@@ -122,7 +126,7 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.delete ('/user', routeUser.requestAccountDelete);
 
-  app.get('/:rId/:source', routeOnboarding.installRedirect);
+  app.get('/:rId/:source', routeOnboarding.moveDomain, routeOnboarding.installRedirect);
 
   //Used by the load balancer to check whether this API is working.
   //mv views/index.html to stop traffic from the load balancer.

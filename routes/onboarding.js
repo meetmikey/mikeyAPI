@@ -4,6 +4,8 @@ var winston = require(serverCommon + '/lib/winstonWrapper').winston
   , referralUtils = require(serverCommon + '/lib/referralUtils')
   , mikeyAPIConstants = require ('../constants')
   , constants = require (serverCommon + '/constants')
+  , conf = require (serverCommon + '/conf')
+  , url = require ('url')
   , UserOnboardingStateModel = require (serverCommon  + '/schema/onboard').UserOnboardingStateModel
   , MailModel = require (serverCommon + '/schema/mail').MailModel
   , mikeyAPIConf = require('../conf')
@@ -50,6 +52,16 @@ exports.getOnboardingState = function (req, res) {
     });
 
 };
+
+exports.moveDomain = function ( req, res, next ) {
+  if (req.headers.host !== conf.domain) {
+    winston.doInfo ('redirect');
+    res.redirect ('https://' + conf.domain + req.route.path);
+  } else {
+    winston.doInfo ('no redirect');
+    next()
+  }
+}
 
 exports.installRedirect = function( req, res ) {
 
