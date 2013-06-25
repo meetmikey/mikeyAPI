@@ -27,11 +27,11 @@ exports.getLinks = function(req, res) {
   var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true, 'isDeleted' : false })
 
   if ( before && ( before != Infinity ) && ( before != 'Infinity' ) ) {
-    query.where ('sentDate').lt (before)
+    query.where ('sentDate').lt(before);
   }
 
   if ( after && ( after != -Infinity ) && ( after != '-Infinity' ) ) {
-    query.where ('sentDate').gt (after)
+    query.where('sentDate').gt(after);
   }
 
   if ( ! user.isPremium ) {
@@ -42,7 +42,9 @@ exports.getLinks = function(req, res) {
     } else {
       var currentTime = Date.now();
       var cutoffDate = new Date(currentTime - daysLimit*constants.ONE_DAY_IN_MS);
-      query.where('sentDate').gt(cutoffDate);
+      if ( ( ! after ) || ( cutoffDate > new Date(after) ) ) {
+        query.where('sentDate').gt(cutoffDate);
+      }
     }
   }
       
