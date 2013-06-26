@@ -7,15 +7,16 @@ var conf = require(serverCommon + '/conf')
   , AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
   , searchHelpers = require ('../lib/searchHelpers')
-  , constants = require('../constants')
+  , mikeyAPIConstants = require('../constants')
 
 var routeSearch = this;
 
-exports.getSearchResults = function(req, res) {
+exports.getSearchOptions = function(req, callback) {
 
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
     winston.doWarn('routeLinks: getLinks: missing userId');
-    res.send(400, 'missing userId');
+    callback( 'missing userId');
+    return;
   }
 
   var user = req.user;
@@ -29,39 +30,84 @@ exports.getSearchResults = function(req, res) {
     }
   }
 
+  var fromIndex = 0;
+  if ( req.query.fromIndex ) {
+    fromIndex = req.query.fromIndex;
+  }
 
   // defaults
   var searchOptions = {
       query: req.query.query
-    , from: 0
-    , size: 80
+    , fromIndex: fromIndex
+    , size: mikeyAPIConstants.DEFAULT_RESOURCE_LIMIT
     , userId: userId
     , daysLimit: daysLimit
   }
 
-  routeSearch.validateSearchQuery (req, searchOptions, function (errors) {
-    if (errors) {
-      res.send (errors, 400);
-      return;
+  callback(null, searchOptions);
+}
+
+exports.getSearchResults = function(req, res) {
+
+  routeSearch.getSearchOptions( req, function(errorMessage, searchOptions) {
+    if ( errorMessage ) {
+      res.send( errorMessage, 400 );
+
+    } else {
+      routeSearch.validateSearchQuery (req, searchOptions, function (errors) {
+        if (errors) {
+          res.send( errors, 400 );
+
+        } else {
+          searchHelpers.doSearch (searchOptions.query, searchOptions.userId, searchOptions.fromIndex, searchOptions.size, searchOptions.daysLimit,
+            function (err, result) {
+              if (err) {
+                res.send( {'error' : err}, 500 );
+
+              } else {
+                res.send( result );
+              }
+            }
+          );
+        }
+      });
     }
-    else {
-      doSearch ()
+  });
+}
+
+exports.getImageSearchResults = function(req, res) {
+
+  routeSearch.getSearchOptions( req, function(errorMessage, searchOptions) {
+    if ( errorMessage ) {
+      res.send(errorMessage, 400);
+
+    } else {
+      searchOptions.size = mikeyAPIConstants.DEFAULT_IMAGE_RESOURCE_LIMIT;
+      routeSearch.validateSearchQuery( req, searchOptions, function(errors) {
+        if (errors) {
+          res.send(errors, 400);
+
+        } else {
+          var filteredQuery = searchHelpers.filterGmailSearchQuery(searchOptions.query);
+          if (filteredQuery.query == '') {
+            res.send([]);
+
+          } else {
+            searchHelpers.doImageSearch( filteredQuery, searchOptions.userId, searchOptions.fromIndex, searchOptions.size, searchOptions.daysLimit
+              , function (err, result) {
+                if (err) {
+                  res.send ({'error' : err}, 500)
+
+                } else {
+                  res.send( result );
+                }
+              }
+            );
+          }
+        }
+      });
     }
-  })
-
-  function doSearch() {
-    searchHelpers.doSearch (searchOptions.query, searchOptions.userId, searchOptions.from, searchOptions.size, searchOptions.daysLimit,
-      function (err, result) {
-      if (err) {
-        res.send ({'error' : err}, 500)
-      }
-      else {
-        res.send (result)
-      }
-    })
-  }
-
-
+  });
 }
 
 exports.validateSearchQuery = function (req, searchOptions, callback) {
