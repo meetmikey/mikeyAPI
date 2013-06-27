@@ -106,6 +106,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.get('/search',  passport.ensureAuthenticated, routeSearch.getSearchResults);
 
+  app.get('/searchImages',  passport.ensureAuthenticated, routeSearch.getImageSearchResults);
+
   app.get('/onboarding',  passport.ensureAuthenticated, routeOnboarding.getOnboardingState);
 
   app.delete('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.deleteAttachment);

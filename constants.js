@@ -24,7 +24,6 @@ define('IMAGE_EXPIRE_TIME_MINUTES', 1440); //24 hours
 define('FILE_EXPIRE_TIME_MINUTES', 5); //5 minutes
 define('SEARCH_THRESHOLD', 0);
 define('ABSOLUTE_MIN_SCORE', .01);
-define('DEFAULT_MAX_ITEMS', 50);
 define('DEFAULT_RESOURCE_LIMIT', 50);
 define('DEFAULT_IMAGE_RESOURCE_LIMIT', 25);
 define('IMAGE_DEDUPE_ADJUSTMENT_FACTOR', 1.4);  //non-scientific test showed ratio of 1.32.
