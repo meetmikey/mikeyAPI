@@ -45,7 +45,7 @@ exports.getSearchResults = function(req, res) {
       return;
     }
     else {
-      doSearch ()
+      doSearch ();
     }
   })
 
