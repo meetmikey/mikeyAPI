@@ -33,10 +33,9 @@ exports.getOnboardingState = function (req, res) {
             res.send ({'progress' : 1});
           } else {
 
+            var ratio = (userInfo.timestamp.getTime() - userInfo.minMRProcessedDate.getTime())/(userInfo.daysLimit*constants.ONE_DAY_IN_MS)
 
-            var ratio = 1-(req.user.minMRProcessedDate.getTime() - req.user.minProcessedDate.getTime())/(req.user.daysLimit*constants.ONE_DAY_IN_MS)
-
-            if (ratio > .75) {
+            if (ratio > .7) {
               res.send ({progress : 1});
             } else {
               winston.doInfo ('Progress of onboarding not high enough', {progress : ratio});
