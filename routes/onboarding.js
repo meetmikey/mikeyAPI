@@ -7,7 +7,7 @@ var winston = require(serverCommon + '/lib/winstonWrapper').winston
   , conf = require (serverCommon + '/conf')
   , url = require ('url')
   , UserOnboardingStateModel = require (serverCommon  + '/schema/onboard').UserOnboardingStateModel
-  , UserModel = require (serverCommon  + '/schema/onboard').UserModel
+  , UserModel = require (serverCommon  + '/schema/user').UserModel
   , MailModel = require (serverCommon + '/schema/mail').MailModel
   , mikeyAPIConf = require('../conf')
 
