@@ -7,6 +7,7 @@ var winston = require(serverCommon + '/lib/winstonWrapper').winston
   , conf = require (serverCommon + '/conf')
   , url = require ('url')
   , UserOnboardingStateModel = require (serverCommon  + '/schema/onboard').UserOnboardingStateModel
+  , UserModel = require (serverCommon  + '/schema/onboard').UserModel
   , MailModel = require (serverCommon + '/schema/mail').MailModel
   , mikeyAPIConf = require('../conf')
 
@@ -15,6 +16,7 @@ var routeOnboarding = this;
 exports.getOnboardingState = function (req, res) {
   
   var userId = req.user._id;
+  var userInfo = req.user;
 
   UserOnboardingStateModel.findOne ({userId : userId}, 
     '_id userId lastCompleted mikeyMailTS',
