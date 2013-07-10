@@ -29,15 +29,15 @@ exports.getOnboardingState = function (req, res) {
           res.send ({'progress' : 0});
         }
         else {
-          // check if it's been > 12 hours since onboarding complete
-          if (foundState.mikeyMailTS < new Date(Date.now () - 60*1000*60*12)) {
-            winston.doInfo ('12 hours since onboarding, pretty sure we\'re done', {userId: userId});
+          // check if it's been > 8 hours since onboarding complete
+          if (foundState.mikeyMailTS < new Date(Date.now () - 60*1000*60*8)) {
+            winston.doInfo ('8 hours since onboarding, pretty sure we\'re done', {userId: userId});
             res.send ({'progress' : 1});
           } else {
 
             var ratio = (userInfo.timestamp.getTime() - userInfo.minMRProcessedDate.getTime())/(userInfo.daysLimit*constants.ONE_DAY_IN_MS)
 
-            if (ratio > .7) {
+            if (ratio > .75) {
               res.send ({progress : 1});
             } else {
               winston.doInfo ('Progress of onboarding not high enough', {progress : ratio});
