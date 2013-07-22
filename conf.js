@@ -3,7 +3,7 @@ var environment = process.env.NODE_ENV;
 var buildDir = process.env.MIKEY_BUILD;
 
 var keyDir = './keysLocal/';
-var installURL = 'https://chrome.google.com/webstore/detail/mikey-for-gmail/pfbeimpckikjpnjhcbpikdjnelnblhnn';
+var installURL = 'http://meetmikey.com';
 
 if (environment == 'production') {
   keyDir = buildDir + '/keys/';
