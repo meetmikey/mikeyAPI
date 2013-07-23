@@ -97,7 +97,6 @@ exports.installRedirect = function( req, res ) {
 }
 
 exports.checkForReferral = function( req, res ) {
-
   if ( req && req.signedCookies && req.signedCookies['referralId'] ) {
     var newUser = req.user;
     var referralId = req.signedCookies['referralId'];
