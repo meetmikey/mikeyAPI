@@ -120,9 +120,11 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.get('/user', routeUser.getCurrentUser);
 
-  app.get ('/counts', passport.ensureAuthenticated, routeCounts.getCounts);
+  app.get('/counts', passport.ensureAuthenticated, routeCounts.getCounts);
 
-  app.get ('/upgradeInterest', passport.ensureAuthenticated, routeUser.upgradeInterest);
+  app.post('/upgrade', passport.ensureAuthenticated, routeUser.upgrade);
+
+  app.get('/upgradeInterest', passport.ensureAuthenticated, routeUser.upgradeInterest);
 
   app.post ('/debug', routeDebug.postClientBug);
 
