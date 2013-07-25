@@ -28,6 +28,8 @@ var initActions = [
   //, appInitUtils.MEMWATCH_MONITOR
 ];
 
+conf.turnDebugModeOn();
+
 //initApp() will not callback an error.
 //If something fails, it will just exit the process.
 appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
@@ -120,7 +122,7 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.get('/user', routeUser.getCurrentUser);
 
-  app.get ('/counts', passport.ensureAuthenticated, routeCounts.getCounts);
+  //app.get ('/counts', passport.ensureAuthenticated, routeCounts.getCounts);
 
   app.get ('/upgradeInterest', passport.ensureAuthenticated, routeUser.upgradeInterest);
 
