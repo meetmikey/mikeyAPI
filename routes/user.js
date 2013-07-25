@@ -4,7 +4,7 @@ var winston = require(serverCommon + '/lib/winstonWrapper').winston
   , constants = require ('../constants')
   , mongoose = require(serverCommon + '/lib/mongooseConnect').mongoose
   , sesUtils = require(serverCommon + '/lib/sesUtils')
-  , upgradeHelpers = require('../lib/upgradeHelpers')
+  , upgradeUtils = require(serverCommon + '/lib/upgradeUtils')
 
 var routeUser = this;
 var UserModel = mongoose.model ('User')
@@ -77,7 +77,7 @@ exports.upgrade = function( req, res ) {
   var userEmail = req.body.userEmail;
 
   winston.doInfo('upgrade', {stripeToken: stripeToken, plan: plan, userEmail: userEmail});
-  upgradeHelpers.upgradeUser( userEmail, plan, stripeToken, function(err) {
+  upgradeUtils.chargeAndUpgradeUser( userEmail, plan, stripeToken, function(err) {
     if ( err ) {
       winston.handleError(err);
       res.send(400);
@@ -86,7 +86,6 @@ exports.upgrade = function( req, res ) {
       res.send(200);
     }
   });
-
 }
 
 exports.upgradeInterest = function( req, res ) {
