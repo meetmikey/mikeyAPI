@@ -19,7 +19,7 @@ else{
 
 define('LISTEN_PORT', 8080);
 
-define('DEFAULT_USER_FIELDS', 'googleID shortId asymHash expiresAt displayName firstName lastName email gender locale hostedDomain picture gmailScrapeRequested timestamp invalidToken twitterReferralLink facebookReferralLink directReferralLink isPremium daysLimit minMailDate');
+define('DEFAULT_USER_FIELDS', 'googleID shortId asymHash expiresAt displayName firstName lastName email gender locale hostedDomain picture gmailScrapeRequested timestamp invalidToken twitterReferralLink facebookReferralLink directReferralLink isPremium daysLimit minMailDate billingPlan isGrantedPremium');
 define('IMAGE_EXPIRE_TIME_MINUTES', 1440); //24 hours
 define('FILE_EXPIRE_TIME_MINUTES', 5); //5 minutes
 define('SEARCH_THRESHOLD', 0);
