@@ -72,12 +72,11 @@ exports.requestAccountDelete = function (req, res) {
 
 exports.upgrade = function( req, res ) {
 
-  var stripeToken = req.body.stripeToken;
-  var plan = req.body.plan;
+  var stripeCardToken = req.body.stripeCardToken;
+  var billingPlan = req.body.billingPlan;
   var userEmail = req.body.userEmail;
 
-  winston.doInfo('upgrade', {stripeToken: stripeToken, plan: plan, userEmail: userEmail});
-  upgradeUtils.chargeAndUpgradeUser( userEmail, plan, stripeToken, function(err) {
+  upgradeUtils.chargeAndUpgradeUser( userEmail, stripeCardToken, billingPlan, function(err) {
     if ( err ) {
       winston.handleError(err);
       res.send(400);
