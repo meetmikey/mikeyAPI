@@ -70,23 +70,6 @@ exports.requestAccountDelete = function (req, res) {
     });
 }
 
-exports.upgrade = function( req, res ) {
-
-  var stripeCardToken = req.body.stripeCardToken;
-  var billingPlan = req.body.billingPlan;
-  var userEmail = req.body.userEmail;
-
-  upgradeUtils.chargeAndUpgradeUser( userEmail, stripeCardToken, billingPlan, function(err) {
-    if ( err ) {
-      winston.handleError(err);
-      res.send(400);
-
-    } else {
-      res.send(200);
-    }
-  });
-}
-
 exports.upgradeInterest = function( req, res ) {
   var userEmail = req.query.userEmail;
 
@@ -105,4 +88,36 @@ exports.upgradeInterest = function( req, res ) {
     }
   });
   res.send(200);
+}
+
+exports.upgradeUserToBillingPlan = function( req, res ) {
+
+  var stripeCardToken = req.body.stripeCardToken;
+  var billingPlan = req.body.billingPlan;
+  var userEmail = req.body.userEmail;
+
+  upgradeUtils.tryOrCreateUpgradeJob( userEmail, stripeCardToken, billingPlan, function(err) {
+    if ( err ) {
+      winston.handleError(err);
+      res.send(400);
+
+    } else {
+      res.send(200);
+    }
+  });
+}
+
+exports.cancelUserBillingPlan = function( req, res ) {
+
+  var userEmail = req.body.userEmail;
+
+  upgradeUtils.tryOrCreateCancelUserBillingPlanJob( userEmail, function(err) {
+    if ( err ) {
+      winston.handleError(err);
+      res.send(400);
+
+    } else {
+      res.send(200);
+    }
+  });
 }
