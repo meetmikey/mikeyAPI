@@ -121,3 +121,17 @@ exports.cancelUserBillingPlan = function( req, res ) {
     }
   });
 }
+
+exports.creditChromeStoreReview = function( req, res ) {
+
+  var userEmail = req.body.userEmail;
+  upgradeUtils.creditChromeStoreReview( userEmail, function(err) {
+    if ( err ) {
+      winston.handleError(err);
+      res.send(400);
+
+    } else {
+      res.send(200);
+    }
+  });
+}
