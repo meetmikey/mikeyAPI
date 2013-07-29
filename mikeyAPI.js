@@ -124,6 +124,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.get('/upgradeInterest', passport.ensureAuthenticated, routeUser.upgradeInterest);
 
+  app.post('/creditChromeStoreReview', passport.ensureAuthenticated, routeUser.creditChromeStoreReview);
+
   app.post('/upgradeToBillingPlan', passport.ensureAuthenticated, routeUser.upgradeUserToBillingPlan);
 
   app.post('/cancelBillingPlan', passport.ensureAuthenticated, routeUser.cancelUserBillingPlan);
