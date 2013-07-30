@@ -5,6 +5,7 @@ var winston = require(serverCommon + '/lib/winstonWrapper').winston
   , mongoose = require(serverCommon + '/lib/mongooseConnect').mongoose
   , sesUtils = require(serverCommon + '/lib/sesUtils')
   , upgradeUtils = require(serverCommon + '/lib/upgradeUtils')
+  , sesUtils = require(serverCommon + '/lib/sesUtils')
 
 var routeUser = this;
 var UserModel = mongoose.model ('User')
@@ -101,6 +102,15 @@ exports.upgradeUserToBillingPlan = function( req, res ) {
       winston.handleError(err);
       res.send(400);
 
+      //bad. send email...
+      var text = 'userEmail: ' + userEmail + ', billingPlan: ' + billingPlan + ', error: ' + err.log;
+      var subject = 'BAD: upgradeUserToBillingPlan route returned error';
+      sesUtils.sendInternalNotificationEmail( text, subject, function(err) {
+        if ( err ) {
+          winston.handleError(err);
+        }
+      });
+
     } else {
       res.send(200);
     }
@@ -116,6 +126,15 @@ exports.cancelUserBillingPlan = function( req, res ) {
       winston.handleError(err);
       res.send(400);
 
+      //bad. send email...
+      var text = 'userEmail: ' + userEmail + ', error: ' + err.log;
+      var subject = 'BAD: cancelUserBillingPlan route returned error';
+      sesUtils.sendInternalNotificationEmail( text, subject, function(err) {
+        if ( err ) {
+          winston.handleError(err);
+        }
+      });
+
     } else {
       res.send(200);
     }
@@ -129,6 +148,15 @@ exports.creditChromeStoreReview = function( req, res ) {
     if ( err ) {
       winston.handleError(err);
       res.send(400);
+
+      //bad. send email...
+      var text = 'userEmail: ' + userEmail + ', error: ' + err.log;
+      var subject = 'BAD: creditChromeStoreReview route returned error';
+      sesUtils.sendInternalNotificationEmail( text, subject, function(err) {
+        if ( err ) {
+          winston.handleError(err);
+        }
+      });
 
     } else {
       res.send(200);
