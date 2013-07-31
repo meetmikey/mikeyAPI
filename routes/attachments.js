@@ -5,6 +5,7 @@ var AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentMod
   , mikeyAPIConstants = require ('../constants')
   , attachmentHelpers = require ('../lib/attachmentHelpers')
   , cloudStorageUtils = require (serverCommon + '/lib/cloudStorageUtils')
+  , sqsConnect = require (serverCommon + '/lib/sqsConnect')
   , indexingHandler = require (serverCommon + '/lib/indexingHandler')
   , activeConnectionHelpers = require ('../lib/activeConnectionHelpers');
 
@@ -54,8 +55,7 @@ exports.deleteAttachment = function (req, res) {
     });
 }
 
-/*
-exports.unDeleteAttachment = function (req, res) {
+exports.deleteAttachment = function (req, res) {
 
   var userId = req.user._id;
   var attachmentId = req.params.attachmentId;
@@ -70,14 +70,14 @@ exports.unDeleteAttachment = function (req, res) {
         if (String (foundAtt.userId) != userId) {
           res.send ({'error' : 'not authorized'}, 403);
         } else {
-          foundAtt.isDeleted = false;
+          foundAtt.isDeleted = true;
 
           foundAtt.save (function (err) {
             if (err) {
               winston.doMongoError (err, null, res);
             } else {
-              // create indexing job
-              indexingHandler.createIndexingJobForDocument (foundAtt, false, false, function (err) {
+              // create delete from index job
+              indexingHandler.createDeleteJobForDocument(userId, attachmentId, 'Attachment', function (err) {
                 if (err) {
                   winston.doMongoError(err, null, res);
                 } else {
@@ -88,10 +88,57 @@ exports.unDeleteAttachment = function (req, res) {
           });
         }
       }
-    })
-
+    });
 }
-*/
+
+exports.putAttachment = function (req, res) {
+
+  var userId = req.user._id;
+  var attachmentId = req.params.attachmentId;
+
+  // only certain properties can be changed, we check these
+  var changes = routeAttachments.getChangeDictForAttachment (req); 
+
+  AttachmentModel.findOneAndUpdate ({_id : attachmentId, userId : userId},
+    changes,
+    function (err, foundAtt) {
+      if (err) {
+        winston.doMongoError(err, null, res);
+      } else if (!foundAtt) {
+        res.send ({'error' : 'bad request'}, 400);
+      } else {
+        res.send (foundAtt, 200);
+
+        var invalidateJob = {
+          _id : foundAtt._id
+        }
+
+        sqsConnect.addMessageToCacheInvalidationQueue (invalidateJob, function (err) {
+          if (err) {
+            winston.doError (err);
+          }
+        });
+
+      }
+    });
+}
+
+exports.getChangeDictForAttachment = function (req) {
+  var modifiedResource = req.body;
+
+  var changes = { $set : { } };
+
+  if (modifiedResource.isDeleted) {
+    changes['$set']['isDeleted'] = modifiedResource.isDeleted;
+  }
+
+  if (modifiedResource.isFaved) {
+    changes['$set']['isFaved'] = modifiedResource.isFaved;
+  }
+
+  return changes;
+}
+
 
 exports.goToAttachmentSignedURL = function(req, res) {
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
