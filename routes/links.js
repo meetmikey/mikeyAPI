@@ -3,6 +3,7 @@ var serverCommon = process.env.SERVER_COMMON;
 var LinkModel = require(serverCommon + '/schema/link').LinkModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
   , constants = require(serverCommon + '/constants')
+  , sqsConnect = require (serverCommon + '/lib/sqsConnect')
   , indexingHandler = require (serverCommon + '/lib/indexingHandler')
   , linkHelpers = require('../lib/linkHelpers')
 
@@ -19,12 +20,17 @@ exports.getLinks = function(req, res) {
   var before = req.query.before;
   var after = req.query.after;
   var limit = req.query.limit;
+  var isFaved = req.query.faved;
+
+  if (!isFaved) {
+    isFaved = false;
+  }
 
   if (!limit) {
     limit = 50
   }
 
-  var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true, 'isDeleted' : false })
+  var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true, 'isDeleted' : false, 'isFaved' : isFaved })
 
   if ( before && ( before != Infinity ) && ( before != 'Infinity' ) ) {
     query.where ('sentDate').lt(before);
@@ -99,41 +105,51 @@ exports.deleteLink = function (req, res) {
     })
 }
 
-/*
-exports.unDeleteLink = function (req, res) {
+
+exports.putLink = function (req, res) {
 
   var userId = req.user._id;
   var linkId = req.params.linkId;
 
-  LinkModel.findOne ({_id : linkId},
+  // only certain properties can be changed, we check these
+  var changes = routeLinks.getChangeDictForLink (req); 
+
+  LinkModel.findOneAndUpdate ({_id : linkId, userId : userId},
+    changes,
     function (err, foundLink) {
       if (err) {
         winston.doMongoError(err, null, res);
       } else if (!foundLink) {
-        res.send ({'error' : 'bad linkId'}, 400);
+        res.send ({'error' : 'bad request'}, 400);
       } else {
-        if (String (foundLink.userId) != userId) {
-          res.send ({'error' : 'not authorized'}, 403);
-        } else {
-          foundLink.isDeleted = false;
+        res.send (foundLink, 200);
 
-          foundLink.save (function (err) {
-            if (err) {
-              winston.doMongoError (err, null, res);
-            } else {
-              // create indexing job
-              indexingHandler.createIndexingJobForDocument(foundLink, true, false, function (err) {
-                if (err) {
-                  winston.doMongoError(err, null, res);
-                } else {
-                  res.send (200);
-                }
-              });
-            }
-          });
+        var invalidateJob = {
+          _id : foundLink._id
         }
-      }
-    })
 
+        sqsConnect.addMessageToCacheInvalidationQueue (invalidateJob, function (err) {
+          if (err) {
+            winston.doError (err);
+          }
+        });
+      
+      }
+    });
 }
-*/
+
+exports.getChangeDictForLink = function (req) {
+  var modifiedResource = req.body;
+
+  var changes = { $set : { } };
+
+  if (modifiedResource.isDeleted) {
+    changes['$set']['isDeleted'] = modifiedResource.isDeleted;
+  }
+
+  if (modifiedResource.isFaved) {
+    changes['$set']['isFaved'] = modifiedResource.isFaved;
+  }
+
+  return changes;
+}

@@ -4,7 +4,6 @@ var express             = require('express'),
     passport            = require('./lib/passport'),
     constants           = require('./constants'),
     expressValidator    = require('express-validator'),
-    GoogleStrategy      = require('passport-google-oauth').OAuth2Strategy,
     conf                = require(serverCommon + '/conf'),
     mikeyAPIConf        = require('./conf'),
     fs                  = require('fs'),
@@ -15,9 +14,7 @@ var express             = require('express'),
     routeAttachments    = require('./routes/attachments'),
     routeDebug          = require('./routes/debug'),
     routeOnboarding     = require ('./routes/onboarding'),
-    routeCounts         = require ('./routes/counts'),
     routeImages         = require('./routes/images'),
-    util                = require ('util'),
     winston             = require (serverCommon + '/lib/winstonWrapper').winston,
     appInitUtils        = require(serverCommon + '/lib/appInitUtils');
 
@@ -116,9 +113,9 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.delete('/link/:linkId', passport.ensureAuthenticated, routeLinks.deleteLink);
 
-  //app.put('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.unDeleteAttachment);
+  app.put('/attachment/:attachmentId', passport.ensureAuthenticated, routeAttachments.putAttachment);
 
-  //app.put('/link/:linkId', passport.ensureAuthenticated, routeLinks.unDeleteLink);
+  app.put('/link/:linkId', passport.ensureAuthenticated, routeLinks.putLink);
 
   app.get('/user', routeUser.getCurrentUser);
 
