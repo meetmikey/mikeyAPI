@@ -116,7 +116,10 @@ exports.putLink = function (req, res) {
     , userId : userId
   }
 
-  isFavorite = ( req.body.isFavorite ) ? true : false;
+  var isFavorite = false
+  if ( req.body.isFavorite == 'true' ) {
+    isFavorite = true;
+  }
   updateData = {$set:{
     isFavorite: isFavorite
   }};
