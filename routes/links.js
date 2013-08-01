@@ -20,17 +20,17 @@ exports.getLinks = function(req, res) {
   var before = req.query.before;
   var after = req.query.after;
   var limit = req.query.limit;
-  var isFaved = req.query.faved;
+  var isFavorite = req.query.isFavorite;
 
-  if (!isFaved) {
-    isFaved = false;
+  if (!isFavorite) {
+    isFavorite = false;
   }
 
   if (!limit) {
     limit = 50
   }
 
-  var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true, 'isDeleted' : false, 'isFaved' : isFaved })
+  var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true, 'isDeleted' : false, 'isFavorite' : isFavorite })
 
   if ( before && ( before != Infinity ) && ( before != 'Infinity' ) ) {
     query.where ('sentDate').lt(before);
@@ -111,45 +111,35 @@ exports.putLink = function (req, res) {
   var userId = req.user._id;
   var linkId = req.params.linkId;
 
-  // only certain properties can be changed, we check these
-  var changes = routeLinks.getChangeDictForLink (req); 
+  var filterData = {
+      _id: linkId
+    , userId : userId
+  }
 
-  LinkModel.findOneAndUpdate ({_id : linkId, userId : userId},
-    changes,
-    function (err, foundLink) {
-      if (err) {
-        winston.doMongoError(err, null, res);
-      } else if (!foundLink) {
-        res.send ({'error' : 'bad request'}, 400);
-      } else {
-        res.send (foundLink, 200);
+  isFavorite = ( req.body.isFavorite ) ? true : false;
+  updateData = {$set:{
+    isFavorite: isFavorite
+  }};
 
-        var invalidateJob = {
-          _id : foundLink._id
-        }
+  LinkModel.findOneAndUpdate( filterData, updateData, function(err, foundLink) {
+    if (err) {
+      winston.doMongoError(err, null, res);
 
-        sqsConnect.addMessageToCacheInvalidationQueue (invalidateJob, function (err) {
-          if (err) {
-            winston.doError (err);
-          }
-        });
-      
+    } else if (!foundLink) {
+      res.send ({'error' : 'bad request'}, 400);
+
+    } else {
+      res.send (foundLink, 200);
+
+      var invalidateJob = {
+        _id : foundLink._id
       }
-    });
-}
 
-exports.getChangeDictForLink = function (req) {
-  var modifiedResource = req.body;
-
-  var changes = { $set : { } };
-
-  if (modifiedResource.isDeleted) {
-    changes['$set']['isDeleted'] = modifiedResource.isDeleted;
-  }
-
-  if (modifiedResource.isFaved) {
-    changes['$set']['isFaved'] = modifiedResource.isFaved;
-  }
-
-  return changes;
+      sqsConnect.addMessageToCacheInvalidationQueue (invalidateJob, function (err) {
+        if (err) {
+          winston.doError (err);
+        }
+      });
+    }
+  });
 }

@@ -96,49 +96,39 @@ exports.putAttachment = function (req, res) {
   var userId = req.user._id;
   var attachmentId = req.params.attachmentId;
 
-  // only certain properties can be changed, we check these
-  var changes = routeAttachments.getChangeDictForAttachment (req); 
+  var filterData = {
+      _id: attachmentId
+    , userId : userId
+  }
 
-  AttachmentModel.findOneAndUpdate ({_id : attachmentId, userId : userId},
-    changes,
-    function (err, foundAtt) {
-      if (err) {
-        winston.doMongoError(err, null, res);
-      } else if (!foundAtt) {
-        res.send ({'error' : 'bad request'}, 400);
-      } else {
-        res.send (foundAtt, 200);
+  isFavorite = ( req.body.isFavorite ) ? true : false;
+  updateData = {$set:{
+    isFavorite: isFavorite
+  }};
 
-        var invalidateJob = {
-          _id : foundAtt._id
-        }
+  AttachmentModel.findOneAndUpdate( filterData, updateData, function (err, foundAtt) {
+    if (err) {
+      winston.doMongoError(err, null, res);
 
-        sqsConnect.addMessageToCacheInvalidationQueue (invalidateJob, function (err) {
-          if (err) {
-            winston.doError (err);
-          }
-        });
+    } else if (!foundAtt) {
+      res.send ({'error' : 'bad request'}, 400);
+      
+    } else {
+      res.send (foundAtt, 200);
 
+      var invalidateJob = {
+        _id : foundAtt._id
       }
-    });
+
+      sqsConnect.addMessageToCacheInvalidationQueue (invalidateJob, function (err) {
+        if (err) {
+          winston.doError (err);
+        }
+      });
+
+    }
+  });
 }
-
-exports.getChangeDictForAttachment = function (req) {
-  var modifiedResource = req.body;
-
-  var changes = { $set : { } };
-
-  if (modifiedResource.isDeleted) {
-    changes['$set']['isDeleted'] = modifiedResource.isDeleted;
-  }
-
-  if (modifiedResource.isFaved) {
-    changes['$set']['isFaved'] = modifiedResource.isFaved;
-  }
-
-  return changes;
-}
-
 
 exports.goToAttachmentSignedURL = function(req, res) {
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
