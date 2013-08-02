@@ -5,7 +5,7 @@ var LinkModel = require(serverCommon + '/schema/link').LinkModel
   , _ = require ('underscore')
   , constants = require(serverCommon + '/constants')
   , sqsConnect = require (serverCommon + '/lib/sqsConnect')
-  , sesUtils = require (serverCommon + '/lib/sesUtils')
+  , smtpUtils = require (serverCommon + '/lib/smtpUtils')
   , indexingHandler = require (serverCommon + '/lib/indexingHandler')
   , linkHelpers = require('../lib/linkHelpers')
 
@@ -177,7 +177,7 @@ exports.putLink = function (req, res) {
     } else {
 
       if (setIsLiked) {
-        sesUtils.sendLikeEmail (true, foundLink, req.user, function (err) {
+        smtpUtils.sendLikeEmail (true, foundLink, req.user, function (err) {
           if (err) {
             winston.doError (err, null, res);
           } else {

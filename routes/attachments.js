@@ -6,7 +6,7 @@ var AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentMod
   , attachmentHelpers = require ('../lib/attachmentHelpers')
   , cloudStorageUtils = require (serverCommon + '/lib/cloudStorageUtils')
   , sqsConnect = require (serverCommon + '/lib/sqsConnect')
-  , sesUtils = require (serverCommon + '/lib/sesUtils')
+  , smtpUtils = require (serverCommon + '/lib/smtpUtils')
   , indexingHandler = require (serverCommon + '/lib/indexingHandler')
   , activeConnectionHelpers = require ('../lib/activeConnectionHelpers');
 
@@ -140,7 +140,7 @@ exports.putAttachment = function (req, res) {
     } else {
 
       if (setIsLiked) {
-        sesUtils.sendLikeEmail (false, foundAtt, req.user, function (err) {
+        smtpUtils.sendLikeEmail (false, foundAtt, req.user, function (err) {
           if (err) {
             winston.doError (err, null, res);
           } else {
