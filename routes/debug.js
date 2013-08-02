@@ -12,7 +12,7 @@ exports.postClientBug = function(req, res) {
 
   winston.doWarn ('Bug posted from client', {type : type, selector : data.selector, email : userEmail});
 
-
+  /*
   if (data && data.dom) {
 
     var path = constants.DOM_DIR + userEmail + '_' + data.selector + '_' + new Date(Date.now()).toISOString();
@@ -22,7 +22,8 @@ exports.postClientBug = function(req, res) {
         winston.doError ('Error writing dom sent from client to disk');
       }
     });
-  }
+  } 
+  */
 
   res.send (200);
 }
