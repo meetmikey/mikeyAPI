@@ -6,6 +6,7 @@ var AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentMod
   , attachmentHelpers = require ('../lib/attachmentHelpers')
   , cloudStorageUtils = require (serverCommon + '/lib/cloudStorageUtils')
   , sqsConnect = require (serverCommon + '/lib/sqsConnect')
+  , sesUtils = require (serverCommon + '/lib/sesUtils')
   , indexingHandler = require (serverCommon + '/lib/indexingHandler')
   , activeConnectionHelpers = require ('../lib/activeConnectionHelpers');
 

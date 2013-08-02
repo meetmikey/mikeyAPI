@@ -5,6 +5,7 @@ var LinkModel = require(serverCommon + '/schema/link').LinkModel
   , _ = require ('underscore')
   , constants = require(serverCommon + '/constants')
   , sqsConnect = require (serverCommon + '/lib/sqsConnect')
+  , sesUtils = require (serverCommon + '/lib/sesUtils')
   , indexingHandler = require (serverCommon + '/lib/indexingHandler')
   , linkHelpers = require('../lib/linkHelpers')
 
