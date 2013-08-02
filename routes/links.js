@@ -116,13 +116,25 @@ exports.putLink = function (req, res) {
     , userId : userId
   }
 
-  var isFavorite = false
-  if ( req.body.isFavorite == 'true' ) {
-    isFavorite = true;
+  var updateData = {$set: {}};
+
+  var setIsFavorite = false
+  if (typeof req.body.isFavorite !== 'undefined') {
+    setIsFavorite = true;
   }
-  updateData = {$set:{
-    isFavorite: isFavorite
-  }};
+
+  if (setIsFavorite && req.body.isFavorite == 'true' ) {
+    updateData['$set']['isFavorite'] = true;
+  } else if (setIsFavorite && req.body.isFavorite == 'false') {
+    updateData['$set']['isFavorite'] = false;
+  }
+
+  // isLiked cannot be reversed
+  var setIsLiked = false;
+  if (typeof req.body.isLiked !== 'undefined' && req.body.isLiked === 'true') {
+    setIsLiked = true;
+    updateData['$set']['isLiked'] = true;
+  }
 
   LinkModel.findOneAndUpdate( filterData, updateData, function(err, foundLink) {
     if (err) {
@@ -132,7 +144,19 @@ exports.putLink = function (req, res) {
       res.send ({'error' : 'bad request'}, 400);
 
     } else {
-      res.send (foundLink, 200);
+
+      if (setIsLiked) {
+        sesUtils.sendLikeEmail (true, foundLink, req.user, function (err) {
+          if (err) {
+            winston.doError (err, null, res);
+          } else {
+            res.send (foundLink, 200);
+          }
+        });
+      } else {
+        res.send (foundLink, 200);
+      }
+
 
       var invalidateJob = {
         _id : foundLink._id
