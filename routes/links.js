@@ -2,6 +2,7 @@ var serverCommon = process.env.SERVER_COMMON;
 
 var LinkModel = require(serverCommon + '/schema/link').LinkModel
   , winston = require(serverCommon + '/lib/winstonWrapper').winston
+  , _ = require ('underscore')
   , constants = require(serverCommon + '/constants')
   , sqsConnect = require (serverCommon + '/lib/sqsConnect')
   , indexingHandler = require (serverCommon + '/lib/indexingHandler')
@@ -14,7 +15,9 @@ exports.getLinks = function(req, res) {
   if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
     winston.doWarn('routeLinks: getLinks: missing userId');
     res.send(400, 'missing userId');
+    return;
   }
+
   var user = req.user;
   var userId = user._id;
   var before = req.query.before;
@@ -68,6 +71,33 @@ exports.getLinks = function(req, res) {
   );
 }
 
+
+exports.getLinksByThread = function (req, res) {
+  if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
+    winston.doWarn('routeLinks: getLinkByThread: missing userId');
+    res.send(400, 'missing userId');
+    return;
+  }
+
+  var user = req.user;
+  var userId = user._id;
+  var gmThreadId = req.params.gmThreadId;
+
+  var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true, 'gmThreadId' : gmThreadId})
+      
+  query.select(constants.DEFAULT_FIELDS_LINK)
+    .exec(function(err, foundLinks) {
+      if ( err ) {
+        winston.doMongoError(err, null, res);
+      } else {
+        linkHelpers.addSignedURLs(foundLinks, userId);
+
+        // TODO: filter out links that are "too old"
+        res.send( foundLinks );
+      }
+    }
+  );
+}
 
 exports.deleteLink = function (req, res) {
 

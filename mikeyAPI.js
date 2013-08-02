@@ -99,9 +99,15 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.get('/attachmentURL/:attachmentId',  passport.ensureAuthenticated, routeAttachments.goToAttachmentSignedURL);
 
+  app.get('/attachment/thread/:gmThreadId',  passport.ensureAuthenticated, routeAttachments.getAttachmentsByThread);
+
   app.get('/image',  passport.ensureAuthenticated, routeImages.getImages);
 
+  app.get('/image/thread/:gmThreadId',  passport.ensureAuthenticated, routeAttachments.getImagesByThread);
+
   app.get('/link',  passport.ensureAuthenticated, routeLinks.getLinks);
+
+  app.get('/link/thread/:gmThreadId',  passport.ensureAuthenticated, routeLinks.getLinksByThread);
 
   app.get('/search',  passport.ensureAuthenticated, routeSearch.getSearchResults);
 

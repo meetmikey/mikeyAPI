@@ -55,6 +55,14 @@ exports.deleteAttachment = function (req, res) {
     });
 }
 
+exports.getAttachmentsByThread = function (req, res) {
+  attachmentHelpers.getFilesByThread( req, res, false );
+}
+
+exports.getImagesByThread = function (req, res) {
+  attachmentHelpers.getFilesByThread( req, res, true );
+}
+
 exports.deleteAttachment = function (req, res) {
 
   var userId = req.user._id;
