@@ -30,8 +30,8 @@ exports.getOnboardingState = function (req, res) {
         }
         else {
           // check if it's been > 8 hours since onboarding complete
-          if (foundState.mikeyMailTS < new Date(Date.now () - 60*1000*60*8)) {
-            winston.doInfo ('8 hours since onboarding, pretty sure we\'re done', {userId: userId});
+          if (foundState.mikeyMailTS < new Date(Date.now () - 60*1000*60*24)) {
+            winston.doInfo ('24 hours since onboarding, pretty sure we\'re done', {userId: userId});
             res.send ({'progress' : 1});
           } else {
 
