@@ -8,6 +8,7 @@ var express             = require('express'),
     mikeyAPIConf        = require('./conf'),
     fs                  = require('fs'),
     https               = require('https'),
+    http                = require ('http'),
     routeLinks          = require('./routes/links'),
     routeSearch         = require('./routes/search'),
     routeUser           = require('./routes/user'),
@@ -158,6 +159,9 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
     winston.doInfo('mikey api running', {listenPort: listenPort}, true);
   });
 
+  if (conf.useNgrok) {
+    app.listen (8081);
+  }
 
   // Simple route middleware to ensure user is authenticated.
   //   Use this route middleware on any resource that needs to be protected.  If
