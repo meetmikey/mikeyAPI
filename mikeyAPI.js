@@ -16,6 +16,7 @@ var express             = require('express'),
     routeDebug          = require('./routes/debug'),
     routeOnboarding     = require ('./routes/onboarding'),
     routeImages         = require('./routes/images'),
+    routeThread         = require('./routes/thread'),
     winston             = require (serverCommon + '/lib/winstonWrapper').winston,
     appInitUtils        = require(serverCommon + '/lib/appInitUtils');
 
@@ -113,6 +114,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
   app.get('/link',  passport.ensureAuthenticated, routeLinks.getLinks);
 
   app.get('/link/thread/:gmThreadId',  passport.ensureAuthenticated, routeLinks.getLinksByThread);
+
+  app.get('/resource/thread/:threadHex', passport.ensureAuthenticated, routeThread.getResources);
 
   app.get('/search',  passport.ensureAuthenticated, routeSearch.getSearchResults);
 
