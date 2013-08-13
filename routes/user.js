@@ -3,7 +3,6 @@ var serverCommon = process.env.SERVER_COMMON;
 var winston = require(serverCommon + '/lib/winstonWrapper').winston
   , constants = require ('../constants')
   , mongoose = require(serverCommon + '/lib/mongooseConnect').mongoose
-  , sesUtils = require(serverCommon + '/lib/sesUtils')
   , upgradeUtils = require(serverCommon + '/lib/upgradeUtils')
   , sesUtils = require(serverCommon + '/lib/sesUtils')
 
