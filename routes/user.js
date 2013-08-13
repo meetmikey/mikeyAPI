@@ -60,7 +60,9 @@ exports.requestAccountDelete = function (req, res) {
       }
       else {
         // send internal notification to delete account
-        sesUtils.sendInternalNotificationEmail ('Account delete requested by user ' + userEmail, 'Account Delete Requested', function (err) {
+        var text = 'Account delete requested by user ' + userEmail;
+        var subject = text;
+        sesUtils.sendEmail(['support@mikeyteam.com'], 'noreply@mikeyteam.com', null, text, text, subject, function (err) {
           if (err) {
             winston.doMongoError(err, null, res);
           } else {
