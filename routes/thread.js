@@ -8,6 +8,7 @@ var winston = require(serverCommon + '/lib/winstonWrapper').winston
   , utils = require(serverCommon + '/lib/utils')
   , async = require('async')
   , attachmentHelpers = require('../lib/attachmentHelpers')
+  , linkHelpers = require('../lib/linkHelpers')
 
 var routeThread = this;
 
@@ -122,6 +123,7 @@ exports.getLinksByThreadId = function( userId, gmThreadId, callback ) {
 			callback( winston.makeMongoError( mongoErr ) );
 
 		} else {
+			linkHelpers.addSignedURLs( mongoResults );
 			callback( null, mongoResults );
 		}
 	});

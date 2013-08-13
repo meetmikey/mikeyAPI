@@ -65,7 +65,7 @@ exports.getLinks = function(req, res) {
       if ( err ) {
         winston.doMongoError(err, null, res);
       } else {
-        linkHelpers.addSignedURLs(foundLinks, userId)
+        linkHelpers.addSignedURLs( foundLinks )
         res.send( foundLinks );
       }
     }
@@ -91,7 +91,7 @@ exports.getLinksByThread = function (req, res) {
       if ( err ) {
         winston.doMongoError(err, null, res);
       } else {
-        linkHelpers.addSignedURLs(foundLinks, userId);
+        linkHelpers.addSignedURLs( foundLinks );
 
         // TODO: filter out links that are "too old"
         res.send( foundLinks );
