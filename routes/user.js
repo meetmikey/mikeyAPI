@@ -3,7 +3,6 @@ var serverCommon = process.env.SERVER_COMMON;
 var winston = require(serverCommon + '/lib/winstonWrapper').winston
   , constants = require ('../constants')
   , mongoose = require(serverCommon + '/lib/mongooseConnect').mongoose
-  , sesUtils = require(serverCommon + '/lib/sesUtils')
   , upgradeUtils = require(serverCommon + '/lib/upgradeUtils')
   , sesUtils = require(serverCommon + '/lib/sesUtils')
 
@@ -60,7 +59,9 @@ exports.requestAccountDelete = function (req, res) {
       }
       else {
         // send internal notification to delete account
-        sesUtils.sendInternalNotificationEmail ('Account delete requested by user ' + userEmail, 'Account Delete Requested', function (err) {
+        var text = 'Account delete requested by user ' + userEmail;
+        var subject = text;
+        sesUtils.sendEmail(['support@mikeyteam.com'], 'noreply@mikeyteam.com', text, text, subject, function (err) {
           if (err) {
             winston.doMongoError(err, null, res);
           } else {

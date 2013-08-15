@@ -38,10 +38,10 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
   app.configure(function() {
     app.engine('html', require('ejs').__express)
     app.use(express.logger({ format:'\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :date \x1b[0m :response-time ms' }));
-    app.use(function(req, res, next){
+    /*app.use(function(req, res, next){
       winston.doInfo ('request:', {method : req.method, url : req.url });
       next();
-    });
+    });*/
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
     app.use(express.bodyParser())
     app.use(express.cookieParser(conf.express.secret));
