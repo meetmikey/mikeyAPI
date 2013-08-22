@@ -12,62 +12,38 @@ var winston = require(serverCommon + '/lib/winstonWrapper').winston
 
 var routeThread = this;
 
-exports.getResources = function(req, res) {
+exports.getResources = function( req, res ) {
+
+	if ( ! req ) { winston.doMissingParamError('req', null, res); return; }
+  if ( ! req.user ) { winston.doMissingParamError('req.user', null, res); return; }
+
+	var user = req.user;
+	var userId = user._id;
 	var threadHex = req.params.threadHex;
-	var userEmail = req.query.userEmail;
 
 	var gmThreadId = mailUtils.getDecimalValue( threadHex );
 	if ( ! gmThreadId ) {
-		winston.doError('no gmThreadId', {threadHex: threadHex});
-		res.send( 400 );
+		winston.doMissingParamError('gmThreadId', {threadHex: threadHex}, res);
 
 	} else {
-		UserModel.findOne( {email: userEmail}, function(mongoErr, foundUser) {
-			if ( mongoErr ) {
-				winston.doMongoError( mongoErr );
-				res.send( 400 );
+		async.parallel([
+				function(parallelCallback) { routeThread.getAttachmentsByThreadId( userId, gmThreadId, parallelCallback ); }
+			, function(parallelCallback) { routeThread.getLinksByThreadId( userId, gmThreadId, parallelCallback ); }
 
-			} else if ( ! foundUser ) {
-				winston.doError('no user', {userEmail: userEmail});
-				res.send( 400 );
+		], function( err, parallelResults ) {
+			if ( err ) {
+				winston.handleError( err, res );
 
 			} else {
-				routeThread.getResourcesByThreadId( foundUser._id, gmThreadId, function(err, resources) {
-					if ( err ) {
-						winston.handleError( err );
-						res.send( 400 );
-
-					} else {
-						res.send( resources );
-					}
-				});
+				var results = {
+						attachments: parallelResults[0].attachments
+					, images: parallelResults[0].images
+					, links: parallelResults[1]
+				}
+				res.send( results );
 			}
 		});
 	}
-}
-
-exports.getResourcesByThreadId = function( userId, gmThreadId, callback ) {
-
-	if ( ! userId ) { callback ( winston.makeMissingParamError('userId') ); return; }
-	if ( ! gmThreadId ) { callback ( winston.makeMissingParamError('gmThreadId') ); return; }
-
-	async.parallel([
-			function(parallelCallback) { routeThread.getAttachmentsByThreadId( userId, gmThreadId, parallelCallback ); }
-		, function(parallelCallback) { routeThread.getLinksByThreadId( userId, gmThreadId, parallelCallback ); }
-
-	], function( err, parallelResults ) {
-		if ( err ) {
-			callback( err );
-
-		} else {
-			var results = {
-					attachments: parallelResults[0].attachments
-				, images: parallelResults[0].images
-				, links: parallelResults[1]
-			}
-			callback( null, results );
-		}
-	});
 }
 
 //calls back with an object that has 'attachments' and 'images', which are arrays
@@ -79,6 +55,8 @@ exports.getAttachmentsByThreadId = function( userId, gmThreadId, callback ) {
 	var filter = {
 			userId: userId
 		, gmThreadId: gmThreadId
+    , isPromoted: true
+    , isDeleted: false
 	};
 
 	var results = {
@@ -116,6 +94,9 @@ exports.getLinksByThreadId = function( userId, gmThreadId, callback ) {
 	var filter = {
 			userId: userId
 		, gmThreadId: gmThreadId
+		, isPromoted: true
+		, isFollowed: true
+    , isDeleted: false
 	};
 
 	LinkModel.find( filter, function(mongoErr, mongoResults) {

@@ -72,34 +72,6 @@ exports.getLinks = function(req, res) {
   );
 }
 
-
-exports.getLinksByThread = function (req, res) {
-  if ( ( ! req ) || ( ! req.user ) || ( ! req.user._id ) ) {
-    winston.doWarn('routeLinks: getLinkByThread: missing userId');
-    res.send(400, 'missing userId');
-    return;
-  }
-
-  var user = req.user;
-  var userId = user._id;
-  var gmThreadId = req.params.gmThreadId;
-
-  var query = LinkModel.find({userId:userId, 'isPromoted':true, 'isFollowed':true, 'gmThreadId' : gmThreadId})
-      
-  query.select(constants.DEFAULT_FIELDS_LINK)
-    .exec(function(err, foundLinks) {
-      if ( err ) {
-        winston.doMongoError(err, null, res);
-      } else {
-        linkHelpers.addSignedURLs( foundLinks );
-
-        // TODO: filter out links that are "too old"
-        res.send( foundLinks );
-      }
-    }
-  );
-}
-
 exports.deleteLink = function (req, res) {
 
   var userId = req.user._id;
