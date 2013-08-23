@@ -17,6 +17,7 @@ var express             = require('express'),
     routeOnboarding     = require ('./routes/onboarding'),
     routeImages         = require('./routes/images'),
     routeThread         = require('./routes/thread'),
+    routeEmailTemplate  = require('./routes/emailTemplate'),
     winston             = require (serverCommon + '/lib/winstonWrapper').winston,
     appInitUtils        = require(serverCommon + '/lib/appInitUtils');
 
@@ -146,7 +147,9 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   //app.get('/testReferral', routeOnboarding.testReferral);
 
-  app.get('/testLikeEmailTemplate', require('./test/testTemplates').renderLikeEmailTemplate );
+  app.get('/likeEmailTemplate', passport.ensureAuthenticated, routeEmailTemplate.getLikeEmailTemplate );
+
+  //app.get('/testLikeEmailTemplate', require('./test/testTemplates').renderLikeEmailTemplate );
 
   //Used by the load balancer to check whether this API is working.
   //mv views/index.html to stop traffic from the load balancer.
