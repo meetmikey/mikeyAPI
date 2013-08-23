@@ -9,8 +9,8 @@ var testTemplates = this;
 
 exports.renderLikeEmailTemplate = function( req, res ) {
 
+  var userId = '52156427da60cbdf1900000a';
 	var type = 'attachment';
-  var senderName = 'Leeroy Jenkins';
   var mongooseModel = AttachmentModel;
   var modelId = '52156570f5f29f8c1a000632';
 
@@ -24,25 +24,35 @@ exports.renderLikeEmailTemplate = function( req, res ) {
   	modelId = '5215649ef5f29f8c1a000093';
   }
 
-  mongooseModel.findById( modelId, function(mongoErr, model) {
-  	if ( mongoErr ) {
-  		winston.doMongoError( mongoErr, null, res );
+  UserModel.findById( userId, function(mongoErr, user) {
+    if ( mongoErr ) {
+      winston.doMongoError( mongoErr, null, res );
 
-  	} else if ( ! model ) {
-  		winston.doError('no model', null, res);
+    } else if ( ! user ) {
+      winston.doError('no user', null, res);
 
-  	} else {
-		  emailTemplates.getLikeTextAndHTML( model, type, senderName, function(err, text, html) {
-		  	if ( err ) {
-		  		winston.handleError( err, res );
+    } else {
+      mongooseModel.findById( modelId, function(mongoErr, model) {
+      	if ( mongoErr ) {
+      		winston.doMongoError( mongoErr, null, res );
 
-		  	} else if ( ! html ) {
-		  		winston.doError('no html', null, res);
+      	} else if ( ! model ) {
+      		winston.doError('no model', null, res);
 
-		  	} else {
-		  		res.send( html );
-		  	}
-		  });
-  	}
-  })
+      	} else {
+    		  emailTemplates.getLikeTextAndHTML( user, model, type, function(err, text, html) {
+    		  	if ( err ) {
+    		  		winston.handleError( err, res );
+
+    		  	} else if ( ! html ) {
+    		  		winston.doError('no html', null, res);
+
+    		  	} else {
+    		  		res.send( html );
+    		  	}
+    		  });
+      	}
+      });
+    }
+  });
 }
