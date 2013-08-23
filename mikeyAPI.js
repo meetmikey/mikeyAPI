@@ -144,7 +144,9 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.get('/:rId/:source', routeOnboarding.moveDomain, routeOnboarding.installRedirect);
 
-  app.get('/testReferral', routeOnboarding.testReferral);
+  //app.get('/testReferral', routeOnboarding.testReferral);
+
+  //app.get('/testLikeEmailTemplate', require('./test/testTemplates').renderLikeEmailTemplate );
 
   //Used by the load balancer to check whether this API is working.
   //mv views/index.html to stop traffic from the load balancer.
