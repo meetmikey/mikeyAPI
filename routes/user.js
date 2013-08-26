@@ -142,10 +142,15 @@ exports.cancelUserBillingPlan = function( req, res ) {
   });
 }
 
+
+//DEPRECATED, slated for removal when everyone's upgraded to use only the '/creditPromotionAction' route.
 exports.creditChromeStoreReview = function( req, res ) {
 
-  var userEmail = req.body.userEmail;
-  upgradeUtils.creditChromeStoreReview( userEmail, function(err) {
+  var user = req.user;
+  var userEmail = user.email;
+  var promotionType = 'chromeStoreReview';
+
+  upgradeUtils.creditPromotionAction( user, promotionType, function(err) {
     if ( err ) {
       winston.handleError(err);
       res.send(400);
@@ -153,6 +158,32 @@ exports.creditChromeStoreReview = function( req, res ) {
       //bad. send email...
       var text = 'userEmail: ' + userEmail + ', error: ' + err.log;
       var subject = 'BAD: creditChromeStoreReview route returned error';
+      sesUtils.sendInternalNotificationEmail( text, subject, function(err) {
+        if ( err ) {
+          winston.handleError(err);
+        }
+      });
+
+    } else {
+      res.send(200);
+    }
+  });
+}
+
+exports.creditPromotionAction = function( req, res ) {
+
+  var user = req.user;
+  var userEmail = user.email;
+  var promotionType = req.body.promotionType;
+
+  upgradeUtils.creditPromotionAction( user, promotionType, function(err) {
+    if ( err ) {
+      winston.handleError(err);
+      res.send(400);
+
+      //bad. send email...
+      var text = 'userEmail: ' + userEmail + ', error: ' + err.log;
+      var subject = 'BAD: creditPromotionAction route returned error, promotionType: ' + promotionType + ', userEmail: ' + userEmail;
       sesUtils.sendInternalNotificationEmail( text, subject, function(err) {
         if ( err ) {
           winston.handleError(err);
