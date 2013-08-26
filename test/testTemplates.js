@@ -40,7 +40,8 @@ exports.renderLikeEmailTemplate = function( req, res ) {
       		winston.doError('no model', null, res);
 
       	} else {
-    		  emailTemplates.getLikeTextAndHTML( user, model, type, function(err, text, html) {
+          var isPreview = true;
+    		  emailTemplates.getLikeTextAndHTML( user, model, type, isPreview, function(err, text, html) {
     		  	if ( err ) {
     		  		winston.handleError( err, res );
 
