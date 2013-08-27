@@ -41,7 +41,7 @@ exports.renderLikeEmailTemplate = function( req, res ) {
 
       	} else {
           var isPreview = true;
-    		  emailTemplates.getLikeTextAndHTML( user, model, type, isPreview, function(err, text, html) {
+    		  emailTemplates.getLikeEmail( user, model, type, isPreview, function(err, text, html, attachments) {
     		  	if ( err ) {
     		  		winston.handleError( err, res );
 
