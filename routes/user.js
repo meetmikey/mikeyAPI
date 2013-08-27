@@ -72,26 +72,6 @@ exports.requestAccountDelete = function (req, res) {
     });
 }
 
-exports.upgradeInterest = function( req, res ) {
-  var userEmail = req.query.userEmail;
-
-  var text = '';
-  if ( userEmail ) {
-    text += userEmail;
-  } else {
-    text += 'an unknown user';
-  }
-  text += ' clicked upgrade';
-  var subject = 'user clicked upgrade';
-
-  sesUtils.sendInternalNotificationEmail(text, subject, function(err) {
-    if ( err ) {
-      winston.handleError(err);
-    }
-  });
-  res.send(200);
-}
-
 exports.upgradeUserToBillingPlan = function( req, res ) {
 
   var stripeCardToken = req.body.stripeCardToken;
