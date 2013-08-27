@@ -131,8 +131,6 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   //app.get ('/counts', passport.ensureAuthenticated, routeCounts.getCounts);
 
-  app.get('/upgradeInterest', passport.ensureAuthenticated, routeUser.upgradeInterest);
-
   //DEPRECATED, slated for removal when everyone's upgraded to use only the '/creditPromotionAction' route.
   app.post('/creditChromeStoreReview', passport.ensureAuthenticated, routeUser.creditChromeStoreReview);
 
