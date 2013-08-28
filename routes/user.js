@@ -34,6 +34,13 @@ exports.getCurrentUser = function (req, res) {
       }
       else {
         res.send (foundUser);
+
+        foundUser.lastLogin = Date.now();
+        foundUser.save (function (err) {
+          if (err) {
+            winston.doMongoError (err);
+          }
+        });
       }
     });
 
