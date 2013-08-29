@@ -26,7 +26,7 @@ define('SEARCH_THRESHOLD', 0);
 define('ABSOLUTE_MIN_SCORE', .01);
 define('DEFAULT_RESOURCE_LIMIT', 50);
 define('DEFAULT_IMAGE_RESOURCE_LIMIT', 20);
-define('ACTIVE_CONNECTION_REQUEUE_CUTOFF', 60*1000*3); // 5 minutes
+define('ACTIVE_CONNECTION_REQUEUE_CUTOFF', 60*1000*3); // 3 minutes
 define('DONE_THRESHOLD', .75);
 
 define ('DOM_DIR', '/var/log/mikey/mikeyAPI/doms/');
