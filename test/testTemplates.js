@@ -9,19 +9,20 @@ var testTemplates = this;
 
 exports.renderLikeEmailTemplate = function( req, res ) {
 
-  var userId = '52156427da60cbdf1900000a';
+  var userId = '52180cb730e2030e0200000a';
 	var type = 'attachment';
   var mongooseModel = AttachmentModel;
-  var modelId = '52156570f5f29f8c1a000632';
+  var modelId = '52180e06a342461f02000339';
 
   if ( req && req.query && req.query.type && req.query.type == 'link' ) {
   	type = 'link';
-  	modelId = '5215650bf5f29f8c1a000270';
+  	modelId = '521d2c15320e405b1100001d'; //image
+    modelId = '521e45d3853611650d00000a'; //no image
   	mongooseModel = LinkModel;
 
   } else if ( req && req.query && req.query.type && req.query.type == 'image' ) {
   	type = 'image';
-  	modelId = '5215649ef5f29f8c1a000093';
+  	modelId = '52180d63a342461f0200008c';
   }
 
   UserModel.findById( userId, function(mongoErr, user) {
