@@ -28,6 +28,8 @@ define('DEFAULT_RESOURCE_LIMIT', 50);
 define('DEFAULT_IMAGE_RESOURCE_LIMIT', 20);
 define('ACTIVE_CONNECTION_REQUEUE_CUTOFF', 60*1000*3); // 3 minutes
 define('DONE_THRESHOLD', .75);
+define ('STARTUP_TIME', 60*1000*1);
+define ('MAX_CONSECUTIVE_HEALTH_CHECKS', 8);
 
 define ('DOM_DIR', '/var/log/mikey/mikeyAPI/doms/');
 define('REFERRAL_COOKIE_MAX_AGE',   30 * 24 * 60 * 60 * 1000); // 30 days
