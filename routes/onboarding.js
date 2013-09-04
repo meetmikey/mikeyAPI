@@ -104,10 +104,14 @@ exports.checkForReferral = function( req, res ) {
     UserModel.findOne ({shortId : referralId}, function (err, refUser) {
       if (err) {
         winston.doMongoError(err);
-      } else if (!refUser) {
-        winston.doError ('onboarding: checkForReferral: no oldUser')
-      } else {
 
+      } else if ( ! refUser ) {
+        winston.doError('no oldUser');
+
+      } else if ( refUser._id == newUser._id ) {
+        winston.doWarn('routeOnboarding: checkForReferral: Old user is the same as new user.  Not saving referral.', {oldUserId: refUser._id, newUserId: newUser._id});
+
+      } else {
         var source = null;
         if ( req.signedCookies['source'] ) {
           source = req.signedCookies['source'];
@@ -129,7 +133,7 @@ exports.checkForReferral = function( req, res ) {
           winston.doError('onboarding: checkForReferral: no newUserId!', {referralId: referralId, source: source});
         }
       }
-    })
+    });
 
   } else {
     winston.doInfo('onboarding: checkForReferral: no referralId');
