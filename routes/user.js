@@ -5,6 +5,7 @@ var winston = require(serverCommon + '/lib/winstonWrapper').winston
   , mongoose = require(serverCommon + '/lib/mongooseConnect').mongoose
   , upgradeUtils = require(serverCommon + '/lib/upgradeUtils')
   , sesUtils = require(serverCommon + '/lib/sesUtils')
+  , utils = require(serverCommon + '/lib/utils')
 
 var routeUser = this;
 var UserModel = mongoose.model ('User')
@@ -181,4 +182,43 @@ exports.creditPromotionAction = function( req, res ) {
       res.send(200);
     }
   });
+}
+
+exports.updateUserMessagingMask = function( req, res ) {
+
+  var user = req.user;
+  var messagingMaskBit = req.body.messagingMaskBit;
+
+  if ( ! utils.isNumber( messagingMaskBit ) ) {
+    winston.doError('invalid messagingMaskBit', {}, res);
+    return;
+  }
+  if ( utils.isString( messagingMaskBit ) ) {
+    messagingMaskBit = parseFloat( messagingMaskBit );
+  }
+
+  var oldMessagingMask = user.messagingMask;
+  if ( ! oldMessagingMask ) {
+    oldMessagingMask = 0;
+  }
+  var newMessagingMask = oldMessagingMask | messagingMaskBit;
+
+  if ( oldMessagingMask === newMessagingMask ) {
+    winston.doInfo('routeUser: updateUserMessagingMask: no change to messagingMask', {oldMessagingMask: oldMessagingMask, messagingMaskBit: messagingMaskBit});
+    res.send( 200 );
+
+  } else {
+    var updateData = {$set: {
+      messagingMask: newMessagingMask
+    }};
+
+    UserModel.findByIdAndUpdate( user._id, updateData, function(mongoErr) {
+      if ( mongoErr ) {
+        winston.doMongoError( mongoErr, {}, res );
+
+      } else {
+        res.send( 200 );
+      }
+    });
+  }
 }

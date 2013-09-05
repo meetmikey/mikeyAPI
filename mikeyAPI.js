@@ -148,6 +148,8 @@ appInitUtils.initApp( 'mikeyAPI', initActions, conf, function() {
 
   app.post('/cancelBillingPlan', passport.ensureAuthenticated, routeUser.cancelUserBillingPlan);
 
+  app.post('/userMessaging', passport.ensureAuthenticated, routeUser.updateUserMessagingMask);
+
   app.post ('/debug', routeDebug.postClientBug);
 
   app.delete ('/user', routeUser.requestAccountDelete);
