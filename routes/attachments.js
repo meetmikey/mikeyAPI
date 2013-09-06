@@ -7,6 +7,7 @@ var AttachmentModel = require(serverCommon + '/schema/attachment').AttachmentMod
   , cloudStorageUtils = require (serverCommon + '/lib/cloudStorageUtils')
   , sqsConnect = require (serverCommon + '/lib/sqsConnect')
   , smtpUtils = require (serverCommon + '/lib/smtpUtils')
+  , userUtils = require (serverCommon + '/lib/userUtils')
   , indexingHandler = require (serverCommon + '/lib/indexingHandler')
   , activeConnectionHelpers = require ('../lib/activeConnectionHelpers');
 
@@ -92,14 +93,15 @@ exports.deleteAttachment = function (req, res) {
     });
 }
 
+//This is only intended to update isFavorite and isLiked.
 exports.putAttachment = function (req, res) {
 
-  var userId = req.user._id;
+  var user = req.user;
   var attachmentId = req.params.attachmentId;
 
   var filterData = {
       _id: attachmentId
-    , userId : userId
+    , userId : user._id
   }
 
   var updateData = {$set: {}};
@@ -130,29 +132,47 @@ exports.putAttachment = function (req, res) {
       res.send ({'error' : 'bad request'}, 400);
       
     } else {
+      if ( setIsLiked ) {
+        smtpUtils.sendLikeEmail (false, foundAtt, user, function (err) {
+          if ( err ) {
+            winston.handleError( err, res );
 
-      if (setIsLiked) {
-        smtpUtils.sendLikeEmail (false, foundAtt, req.user, function (err) {
-          if (err) {
-            winston.doError (err, null, res);
           } else {
-            res.send (foundAtt, 200);
+            routeAttachments.handleUserAction( user, 'like', foundAtt._id, res );
           }
         });
+
+      } else if ( setIsFavorite ) {
+        routeAttachments.handleUserAction( user, 'favorite', foundAtt._id, res );
+
       } else {
-        res.send (foundAtt, 200);
+        res.send( 200 );
       }
 
       var invalidateJob = {
         _id : foundAtt._id
-      }
-
+      };
       sqsConnect.addMessageToCacheInvalidationQueue (invalidateJob, function (err) {
         if (err) {
           winston.doError (err);
         }
       });
+    }
+  });
+}
 
+exports.handleUserAction = function( user, action, attachmentId, res ) {
+  userUtils.addUserAction( user, action, attachmentId, 'attachment', function(err, hitNewThreshold, numUserActions, numNewDays) {
+    if ( err ) {
+      winston.handleError( err, res );
+
+    } else {
+      var responseData = {
+          hitNewThreshold: hitNewThreshold
+        , numUserActions: numUserActions
+        , numNewDays: numNewDays
+      };
+      res.send( responseData, 200 );
     }
   });
 }
