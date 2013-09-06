@@ -6,6 +6,7 @@ var LinkModel = require(serverCommon + '/schema/link').LinkModel
   , constants = require(serverCommon + '/constants')
   , sqsConnect = require (serverCommon + '/lib/sqsConnect')
   , smtpUtils = require (serverCommon + '/lib/smtpUtils')
+  , userUtils = require (serverCommon + '/lib/userUtils')
   , indexingHandler = require (serverCommon + '/lib/indexingHandler')
   , linkHelpers = require('../lib/linkHelpers')
 
@@ -111,12 +112,12 @@ exports.deleteLink = function (req, res) {
 
 exports.putLink = function (req, res) {
 
-  var userId = req.user._id;
+  var user = req.user;
   var linkId = req.params.linkId;
 
   var filterData = {
       _id: linkId
-    , userId : userId
+    , userId : user._id
   }
 
   var updateData = {$set: {}};
@@ -147,29 +148,47 @@ exports.putLink = function (req, res) {
       res.send ({'error' : 'bad request'}, 400);
 
     } else {
+      if ( setIsLiked ) {
+        smtpUtils.sendLikeEmail (true, foundLink, user, function (err) {
+          if ( err ) {
+            winston.handleError( err, res );
 
-      if (setIsLiked) {
-        smtpUtils.sendLikeEmail (true, foundLink, req.user, function (err) {
-          if (err) {
-            winston.doError (err, null, res);
           } else {
-            res.send (foundLink, 200);
+            routeLinks.handleUserAction( user, 'like', foundLink._id, res );
           }
         });
-      } else {
-        res.send (foundLink, 200);
-      }
 
+      } else if ( setIsFavorite ) {
+        routeLinks.handleUserAction( user, 'favorite', foundLink._id, res );
+
+      } else {
+        res.send( 200 );
+      }
 
       var invalidateJob = {
         _id : foundLink._id
-      }
-
+      };
       sqsConnect.addMessageToCacheInvalidationQueue (invalidateJob, function (err) {
         if (err) {
           winston.doError (err);
         }
       });
+    }
+  });
+}
+
+exports.handleUserAction = function( user, action, linkId, res ) {
+  userUtils.addUserAction( user, action, linkId, 'link', function(err, hitNewThreshold, numUserActions, numNewDays) {
+    if ( err ) {
+      winston.handleError( err, res );
+
+    } else {
+      var responseData = {
+          hitNewThreshold: hitNewThreshold
+        , numUserActions: numUserActions
+        , numNewDays: numNewDays
+      };
+      res.send( responseData, 200 );
     }
   });
 }
